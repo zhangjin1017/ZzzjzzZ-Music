@@ -20,7 +20,7 @@
           <p class="song-name text-overflow">{{ item.name }}</p>
           <ul class="artists text-overflow">
             <li class="tag-box">
-              <span class="tag pointer" v-if="item.mvid" @click.stop="goTo('Mv', item.id)" @dblclick.stop>MV</span>
+              <span class="tag pointer" v-if="item.mvid" @click.stop="goTo('Mv', item.mvid)" @dblclick.stop>MV</span>
               <span class="tag" v-if="item.privilege.fee == 1">VIP</span>
             </li>
             <li

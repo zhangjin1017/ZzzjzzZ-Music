@@ -35,6 +35,7 @@ export default {
         limit: this.dataListLength
       }).then(res => {
         if(res.code == 200) {
+          console.log(res)
           this.dataList = res.result.map(item => item.song)
           this.loading = false
         }

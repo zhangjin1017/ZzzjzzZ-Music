@@ -111,6 +111,7 @@ export default {
     },
     // 暂停音乐
     musicPause() {
+      console.log('暂停音乐')
       if(this.player?.pause) {
         this.player.pause()
       } else {
