@@ -69,7 +69,7 @@ export default {
       activeNames: ['1'],
       width: "100%",
       height: "50%",
-
+     
 
 
 
@@ -109,6 +109,12 @@ export default {
   methods: {
     // 获取 mv 数据
     getMvData() {
+      const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
       const id = this.$route.params.id;
       const mvid=id;
       console.log(id)
@@ -116,7 +122,8 @@ export default {
         mvid
       }).then(res => {
         if(res.code == 200) {
-          console.log(res.data)
+          
+       
           this.name = res.data.name;
           this.artistId = res.data.artistId;
           this.artistName = res.data.artistName;
@@ -131,7 +138,11 @@ export default {
           //关闭BottomPlayer组件中的音乐播放
           // BottomPlayer.methods.musicPause();
 
-          
+        
+          loading.close();
+
+          this.$eventBus.$emit('musicPause');
+        
         }else{
           Dialog.alert({
             title: '提示',
@@ -149,6 +160,7 @@ export default {
           this.mvUrl = res.data.url;
           this.mvR = res.data.r;
           
+         
         }else{
           Dialog.alert({
             title: '提示',
@@ -160,16 +172,15 @@ export default {
       
       });
 
+
+
+
+
     },
-
-
-
-
-
-    
-
-
   },
+  destroyed(){
+    // this.$eventBus.$emit('musicPlay');
+  }
 };
 </script>
 

@@ -27,7 +27,8 @@ Vue.prototype.$api = api
 Vue.prototype.$message = config => {
   store.commit('layout/setMessage', config)
 }
-
+//用来监听兄弟组件直接的音乐播放-mv状态
+Vue.prototype.$eventBus=new Vue()
 Vue.config.productionTip = false
 
 new Vue({

@@ -105,6 +105,14 @@ export default {
     
     // 获取歌手描述
     getArtistDescAndDetail() {
+
+      const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+
       // 获取歌手id
       // this.$route.params.id
       const id = this.$route.params.id;
@@ -125,7 +133,7 @@ export default {
       this.musicSize=res.data.artist.musicSize;
       this.mvSize=res.data.artist.mvSize;
       
- 
+        loading.close();
 
     })
     this.$api.artist.getArtistDesc({

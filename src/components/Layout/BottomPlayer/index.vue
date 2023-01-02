@@ -70,7 +70,7 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 import ProgressBar from './components/ProgressBar'
 import FullPlayer from './components/FullPlayer'
 import MiniPlayer from './components/MiniPlayer'
-
+import Mv from "@/views/Mv"
 export default {
   name: 'BottomPlayer',
   components: {
@@ -88,7 +88,8 @@ export default {
       currentTimeTimer: null,
       noUpdateCurrentTime: false,
       loading: false,
-      showFullPlayer: false
+      showFullPlayer: false,
+    
     };
   },
   methods: {
@@ -114,9 +115,11 @@ export default {
       console.log('暂停音乐')
       if(this.player?.pause) {
         this.player.pause()
+      
       } else {
         this.player.load()
         this.updateKey(this.player.pause)
+      
       }
     },
     // 播放下一首
@@ -267,7 +270,8 @@ export default {
     },
     currentSongInfo() {
       this.bindMediaObject()
-    }
+    },
+   
   },
   created() {
     // 设置进度条位置
@@ -304,6 +308,33 @@ export default {
       navigator.mediaSession.setActionHandler('nexttrack', this.playNext)
       navigator.mediaSession.setActionHandler('previoustrack', this.playPrev)
     }
+
+    //监听Mv.data().isMvOpen
+  //  'Mv.data().isMvOpen'(val){
+  //   if(val){
+  //     console.log('Mv页面已经打开了，我要暂停')
+  //     this.player.pause()
+  //   }else{
+  //     console.log('Mv页面已经关闭了，我要播放')
+  //     this.player.play()
+  //   }
+  //  }
+    this.$eventBus.$on('musicPause', (val) => {
+      console.log('Mv页面已经打开了，我要暂停')
+      this.musicPause();
+    })
+    // this.$eventBus.$on('musicPlay', (val) => {
+    //   console.log('Mv页面已经关闭了，我是否要播放')
+    //   //如果是,说明我本来就是播放状态,我就切换回播放状态
+    //   if(this.isPlay){
+    //     this.musicPlay();
+    //   }else{
+    //     console.log('我本来就是暂停状态,我就不播放了')
+    //   }
+    // })
+
+
+
   },
   destroyed() {
     clearInterval(this.currentTimeTimer)
