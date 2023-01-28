@@ -149,6 +149,9 @@ export default {
             message: '获取Mv详情失败,请稍后再试',
           }).then(() => {
             // on close
+            //返回上一页
+            this.$router.go(-1);
+            loading.close();
           });
         }
       });

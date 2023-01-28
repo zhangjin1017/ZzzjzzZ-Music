@@ -91,7 +91,7 @@
       </v-menu>
     </div>
 
-    <h2 class="block-title">封面动效：</h2>
+    <!-- <h2 class="block-title">封面动效：</h2>
     <div class="theme-item-box" style="display: block;">
       <v-select
         class="dynamic-effect-select"
@@ -142,7 +142,7 @@
         :label="animationTime + 'ms'"
         @input="setAnimation"
       ></v-slider>
-    </div>
+    </div> -->
   </div>
 </template>
 
