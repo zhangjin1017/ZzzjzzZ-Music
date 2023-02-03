@@ -14,7 +14,7 @@ const description = `${ title }是一款由${ author }编写的在线音乐应�
 const ogImage = `${ fullDomain }img/icons/android-chrome-192x192.png`
 
 // 接口地址
-const BASE_API = process.env.VUE_APP_BASE_API || 'https://api.music.ixcj.cn/'
+const BASE_API = process.env.VUE_APP_BASE_API || 'https://api.zzzjzzz.top/'
 // 本地调试接口地址
 const DEV_API = '/dev-api'
 // 调试时是否启用代理

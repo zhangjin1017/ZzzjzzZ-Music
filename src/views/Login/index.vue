@@ -15,11 +15,12 @@
             </keep-alive>
           </transition>
         </div>
-        <transition name="fade-transition" mode="out-in">
+        <!-- 二维码登录 -->
+        <!-- <transition name="fade-transition" mode="out-in">
           <div class="qr" v-if="!$vuetify.breakpoint.mobile" @click="handleQr">
             <v-icon class="icon">{{ model === 'qrcode' ? 'mdi-keyboard-return' : 'mdi-qrcode' }}</v-icon>
           </div>
-        </transition>
+        </transition> -->
       </div>
     </div>
     <!-- message组件 -->
