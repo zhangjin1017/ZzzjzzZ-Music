@@ -59,14 +59,14 @@ export default [
       title: '个人中心'
     }
   },
-  {
-    path: 'myPlayList',
-    name: 'MyPlayList',
-    component: () => import('@/views/MyPlayList'),
-    meta: {
-      title: '我的歌单'
-    }
-  },
+  // {
+  //   path: 'myPlayList',
+  //   name: 'MyPlayList',
+  //   component: () => import('@/views/MyPlayList'),
+  //   meta: {
+  //     title: '我的歌单'
+  //   }
+  // },
   {
     path: 'myInfo',
     name: 'MyInfo',
