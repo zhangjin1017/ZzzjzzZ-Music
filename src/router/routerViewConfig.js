@@ -60,9 +60,9 @@ export default [
     }
   },
   {
-    path: 'myPlayList',
-    name: 'MyPlayList',
-    component: () => import('@/views/MyPlayList'),
+    path: 'myPlaylist',
+    name: 'MyPlaylist',
+    component: () => import('@/views/MyPlaylist'),
     meta: {
       title: '我的歌单'
     }

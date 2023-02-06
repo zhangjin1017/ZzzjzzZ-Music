@@ -65,7 +65,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const mustLogin = ['User','MyInfo','MyPlayList','MyPlayRecord'] // 必须要登录的页面
+  const mustLogin = ['User','MyInfo','MyPlaylist','MyPlayRecord'] // 必须要登录的页面
   if(to.name === 'Login') {
     if(store.getters.userInfo.userId) {
       next({
