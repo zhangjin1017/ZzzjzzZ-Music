@@ -60,7 +60,7 @@ export default [
     }
   },
   {
-    path: 'MyPlayList',
+    path: 'myPlayList',
     name: 'MyPlayList',
     component: () => import('@/views/MyPlayList'),
     meta: {
@@ -68,7 +68,7 @@ export default [
     }
   },
   {
-    path: 'MyInfo',
+    path: 'myInfo',
     name: 'MyInfo',
     component: () => import('@/views/MyInfo'),
     meta: {
@@ -76,7 +76,7 @@ export default [
     }
   },
   {
-    path: 'MyPlayRecord',
+    path: 'myPlayRecord',
     name: 'MyPlayRecord',
     component: () => import('@/views/MyPlayRecord'),
     meta: {
