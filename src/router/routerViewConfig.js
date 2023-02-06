@@ -10,6 +10,7 @@ export default [
     name: 'Home',
     component: Home
   },
+  
   {
     path: 'search/:keyword',
     name: 'Search',
@@ -59,11 +60,11 @@ export default [
     }
   },
   {
-    path: 'MyLove',
-    name: 'MyLove',
-    component: () => import('@/views/MyLove'),
+    path: 'MyPlayList',
+    name: 'MyPlayList',
+    component: () => import('@/views/MyPlayList'),
     meta: {
-      title: '我的喜欢'
+      title: '我的歌单'
     }
   },
   {
@@ -75,9 +76,9 @@ export default [
     }
   },
   {
-    path: 'MyPlaylist',
-    name: 'MyPlaylist',
-    component: () => import('@/views/MyPlaylist'),
+    path: 'MyPlayRecord',
+    name: 'MyPlayRecord',
+    component: () => import('@/views/MyPlayRecord'),
     meta: {
       title: '播放记录'
     }

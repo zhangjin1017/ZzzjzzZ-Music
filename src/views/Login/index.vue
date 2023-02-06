@@ -15,14 +15,11 @@
             </keep-alive>
           </transition>
         </div>
-        <!-- 二维码登录 -->
-        <!-- <transition name="fade-transition" mode="out-in">
-          <div class="qr" v-if="!$vuetify.breakpoint.mobile" @click="handleQr">
-            <v-icon class="icon">{{ model === 'qrcode' ? 'mdi-keyboard-return' : 'mdi-qrcode' }}</v-icon>
-          </div>
-        </transition> -->
+      
+        <el-link type="primary" @click="goToRegister">立即注册</el-link>
       </div>
     </div>
+    
     <!-- message组件 -->
     <Message style="bottom: 70px" />
   </v-app>
@@ -32,27 +29,20 @@
 import { mapState, mapMutations } from 'vuex'
 import Message from '@/components/Layout/Message'
 import account from './components/AccountLogin'
-import qrcode from './components/QrcodeLogin'
 
 export default {
   name: 'Login',
   components: {
     Message,
-    account,
-    qrcode
+    account
   },
   data() {
     return {
-      model: 'account'
+      model: 'account',
+     
     }
   },
-  watch: {
-    '$vuetify.breakpoint.mobile'(val) {
-      if(val && this.model === 'qrcode') {
-        this.switchModel('account')
-      }
-    }
-  },
+
   computed: {
     ...mapState('history', ['historyArr']),
     ...mapState('user', ['userInfo'])
@@ -72,14 +62,7 @@ export default {
         })
       }
     },
-    switchModel(name) {
-      this.model = name
-    },
-    handleQr() {
-      this.model !== 'qrcode'
-        ? this.switchModel('qrcode')
-        : this.switchModel('account')
-    },
+    
     handleLogin(data) {
       const userInfo = data.profile
       userInfo.account = data.account
@@ -91,6 +74,11 @@ export default {
 
       this.$nextTick(() => {
         this.$router.replace(replaceParam)
+      })
+    },
+    goToRegister() {
+      this.$router.push({
+        name: 'Register'
       })
     }
   }
@@ -139,28 +127,9 @@ export default {
         margin-bottom: 40px;
       }
     }
-    .qr {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-width: 0 0 60px 80px;
-      border-style: solid;
-      border-color: transparent transparent #eee;
-      cursor: pointer;
-      &:hover {
-        .icon {
-          color: #000;
-        }
-      }
-      .icon {
-        position: absolute;
-        top: 30px;
-        left: -30px;
-        color: #666;
-      }
-    }
+    
+      
+    
   }
 }
 </style>

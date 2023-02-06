@@ -25,7 +25,15 @@ const routes = [
     name: 'Login',
     component: () => import('@/views/Login'),
     meta: {
-      title: '登录网易云账号'
+      title: '登录账号'
+    }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/Register'),
+    meta: {
+      title: '注册'
     }
   },
   {
@@ -57,7 +65,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const mustLogin = ['User'] // 必须要登录的页面
+  const mustLogin = ['User','MyInfo','MyPlayList','MyPlayRecord'] // 必须要登录的页面
   if(to.name === 'Login') {
     if(store.getters.userInfo.userId) {
       next({
@@ -70,6 +78,7 @@ router.beforeEach((to, from, next) => {
       next({
         name: 'Login'
       })
+      
       return
     }
   }

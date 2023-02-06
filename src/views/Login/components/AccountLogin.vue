@@ -92,9 +92,10 @@
 </template>
 
 <script>
-import md5 from '@/utils/md5'
+
 import { validateTel, validateEmail } from '@/utils/validate'
-import { Dialog } from 'vant';
+import { Dialog } from 'vant'
+
 export default {
   name: 'Account',
   data() {

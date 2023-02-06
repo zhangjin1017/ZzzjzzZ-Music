@@ -57,12 +57,12 @@ const menuList = [
     text: '我的信息'
   },
   {
-    to: '/MyLove',
+    to: '/MyPlayList',
     icon: 'mdi-music',
-    text: '我的喜欢'
+    text: '我的歌单'
   },
   {
-    to: '/MyPlaylist',
+    to: '/MyPlayRecord',
     icon: 'mdi-radio',
     text: '播放记录'
   },
