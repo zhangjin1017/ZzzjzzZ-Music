@@ -71,6 +71,8 @@ import ProgressBar from './components/ProgressBar'
 import FullPlayer from './components/FullPlayer'
 import MiniPlayer from './components/MiniPlayer'
 import Mv from "@/views/Mv"
+import { detail} from '@/api/song'
+import axios from 'axios'
 export default {
   name: 'BottomPlayer',
   components: {
@@ -101,29 +103,102 @@ export default {
     ]),
     // 播放音乐
     musicPlay() {
+      
       if(!this.currentSongInfo.id) return
 
       if(this.player?.play && this.player.networkState && this.player.networkState !== 3) {
         this.player.play()
+      
       } else {
         this.player.load()
         this.updateKey(this.player.play)
+       
       }
+      console.log('播放音乐')
+
+    console.log(this.currentSongInfo.id)
+    //获取这首歌的信息
+    this.$api.song.detail({ids:this.currentSongInfo.id+""}).then(res=>{
+      console.log(res)
+      var Param = {
+            /** 歌曲id */
+              musicId: 0,
+            /** 歌名 */
+              name: '',
+            /** 描述 */
+              description: '',
+            /** 封面 */
+              coverImg: '',
+            /** 作者 */
+              artists: '',
+            /** 作者id */
+              artistsId: 0,
+            /** 发布时间 */
+              publicTime: ''
+          }
+         
+            Param.musicId = res.songs[0].id;
+            Param.name = res.songs[0].name;
+            Param.description = "热度:"+res.songs[0].pop;
+           
+            if(res.songs[0].fee==0){
+              Param.description+="   免费或无版权";
+             }
+             if(res.songs[0].fee==1){
+              Param.description+="   VIP 歌曲";
+             }
+              if(res.songs[0].fee==4){
+                Param.description+="   购买专辑";
+              }
+              if(res.songs[0].fee==8){
+                Param.description+="   非会员可免费播放低音质，会员可播放高音质及下载";
+              }
+            Param.coverImg = res.songs[0].al.picUrl;
+           Param.publicTime = this.formatDate(res.songs[0].publishTime);
+            Param.artists = res.songs[0].ar[0].name;
+            Param.artistsId = res.songs[0].ar[0].id;
+            if(res.songs[0].ar[1]){
+              Param.artists += '、' + res.songs[0].ar[1].name;
+              Param.artistsId += ',' + res.songs[0].ar[1].id;
+         
+          }
+
+          console.log(Param)
+           //保存到数据库
+            axios.post('http://localhost:8080/music/music/saveNewMusic',Param).then(res => {
+              console.log(res)
+            }).catch(err => {
+              console.log(err)
+            })
+           
+      
+    })
+
     },
+    // 时间戳转换为年月日
+    formatDate(date) {
+      var date = new Date(date);
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+      var D = date.getDate() + ' ';
+      return Y+M+D;
+    },
+
     // 暂停音乐
     musicPause() {
       console.log('暂停音乐')
       if(this.player?.pause) {
         this.player.pause()
-      
+   
       } else {
         this.player.load()
         this.updateKey(this.player.pause)
-      
+  
       }
     },
     // 播放下一首
     playNext() {
+      console.log('播放下一首')
       const index = this.waitingPlayList.findIndex(item => item.id == this.currentSongInfo.id)
       if(this.waitingPlayList[index + 1]) {
         this.$playMusic(this.waitingPlayList[index + 1].id)
@@ -133,6 +208,7 @@ export default {
     },
     // 播放上一首
     playPrev() {
+      console.log('播放上一首')
       const index = this.waitingPlayList.findIndex(item => item.id == this.currentSongInfo.id)
       if(index > 0) {
         this.$playMusic(this.waitingPlayList[index - 1].id)
@@ -142,6 +218,7 @@ export default {
     },
     // 随机播放
     shufflePlay() {
+      console.log('随机播放')
       const { currentSongInfo, waitingPlayList } = this
       function getRandomId() {
         let id = waitingPlayList[Math.floor(Math.random() * waitingPlayList.length)].id

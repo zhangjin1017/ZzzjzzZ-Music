@@ -57,7 +57,8 @@ import { mapState, mapMutations } from 'vuex'
 import Message from '@/components/Layout/Message'
 import { Dialog } from 'vant'
 import { validateTel, validateEmail } from '@/utils/validate'
-
+//axios
+import axios from 'axios'
 export default {
   name: 'Register',
   components: {
@@ -112,28 +113,86 @@ export default {
 
 
     getCaptcha() {
-      Dialog.alert({
-        title: '提示',
-        message: '由于服务器未启动,获取验证码功能暂未开放'
-      }).then(() => {
-        // on close
+      
+      
+      //如果邮箱为空
+      if (!this.account) {
+        this.$message({
+          content: '邮箱不能为空',
+        })
+        return
+      }else{
+      this.getCaptchaLoading = true
+      //访问login/sendVerifyCodeForRegister/{email}接口
+      axios.get('http://localhost:8080/music/login/sendVerifyCodeForRegister/'+this.account).then(res => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$message({
+            content: '验证码已发送',
+          })
+          this.getCaptchaLoading = false
+          this.getCaptchaTimeout = 60
+          this.getCaptchaTimer = setInterval(() => {
+            this.getCaptchaTimeout--
+            if (this.getCaptchaTimeout <= 0) {
+              clearInterval(this.getCaptchaTimer)
+              this.getCaptchaLoading = false
+            }
+          }, 1000)
+        } else {
+          this.$message({
+            content: res.data.msg,
+          })
+        }
+      }).catch(err => {
+        console.log(err)
       })
+    }
     },
     Register() {
       if (this.password !== this.repassword) {
         this.$message({
           content: '两次密码输入不一致',
         })
-        
         return
       }
-
-      Dialog.alert({
-        title: '提示',
-        message: '由于服务器未启动,登录功能暂未开放'
-      }).then(() => {
-        // on close
+      //所有输入框都不为空
+      if (this.account && this.password && this.repassword && this.captcha) {
+        this.loading = true
+        //访问login/doVerifyCodeForRegister/{email}/{code}/{password}接口
+        axios.post('http://localhost:8080/music/login/doVerifyCodeForRegister/'
+      +this.account+"/"+this.captcha+"/"+this.password).then(res => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$message({
+            content: '注册成功',
+          })
+          //跳转到登录页面
+          this.$router.push({
+            name: 'Login'
+          })
+        } else {
+          this.$message({
+            content: res.data.msg,
+          })
+        }
+      }).catch(err => {
+        console.log(err)
       })
+      } else {
+        this.$message({
+          content: '请填写完整信息',
+        })
+      }
+
+      
+
+      // Dialog.alert({
+      //   title: '提示',
+      //   message: '由于服务器未启动,登录功能暂未开放'
+      // }).then(() => {
+      //   // on close
+      // })
     },
 
     goToLogin() {

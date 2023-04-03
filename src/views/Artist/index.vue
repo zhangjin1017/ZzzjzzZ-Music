@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'Artist',
   data() {
@@ -121,9 +122,6 @@ export default {
       this.$api.artist.getArtistDetail({
         id
       }).then(res => {
-        
-     
-    
       this.name=res.data.artist.name;
       this.alias=res.data.artist.alias;
       this.cover=res.data.artist.cover;
@@ -132,20 +130,67 @@ export default {
       this.identities=res.data.artist.identities;
       this.musicSize=res.data.artist.musicSize;
       this.mvSize=res.data.artist.mvSize;
-      
         loading.close();
-
     })
     this.$api.artist.getArtistDesc({
         id
       }).then(res => {
-        
-      
         this.introduction=res.introduction;
-    
     })
+    this.savaNewArtist(id)
+
     },
-    
+    async savaNewArtist(id) {
+      var Param = {
+        /** 歌手id */
+        artistId: 0,
+        /** 歌手名 */
+        name: '',
+        /** 封面 */
+        coverImg: '',
+        /** 专辑数 */
+        albumSize: 0,
+        /** mv数 */
+        mvSize: 0,
+        /** 歌曲数 */
+        musicSize: 0,
+        /** 介绍 */
+        introduction: '',
+        /** 身份 */
+        identities: '',
+        /** 主要描述 */
+        briefDesc: '',
+        /** 别名 */
+        alias: ''
+      }
+      const res1 = await this.$api.artist.getArtistDetail({ id })
+      if (res1.code !== 200) {
+        throw new Error('Failed to get artist detail information')
+      }
+      // console.log(res1)
+      Param.artistId = res1.data.artist.id
+      Param.name = res1.data.artist.name
+      Param.alias = JSON.stringify(res1.data.artist.alias)
+      Param.coverImg = res1.data.artist.cover
+      Param.albumSize = res1.data.artist.albumSize
+      Param.mvSize = res1.data.artist.mvSize
+      Param.musicSize = res1.data.artist.musicSize
+      Param.identities = JSON.stringify(res1.data.artist.identities)
+      Param.briefDesc = res1.data.artist.briefDesc
+      const res2 = await this.$api.artist.getArtistDesc({ id })
+      Param.introduction = JSON.stringify(res2.introduction)
+      // console.log(res2)
+      // console.log(Param)
+      //保存到数据库
+      axios
+        .post('http://localhost:8080/music/artist/saveNewArtist', Param)
+        .then(res => {
+           console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
   },
 };
 </script>

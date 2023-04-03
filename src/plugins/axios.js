@@ -21,6 +21,11 @@ axios.defaults.retryDelay = retryDelay;
 
 // 请求拦截器
 axios.interceptors.request.use(config => {
+  //如果请求的是music接口，就不添加token
+  if(config.url.includes('music')) {
+    return config
+  }
+
   // 添加cookie
   let cookie = store.getters.cookie || undefined
   if(config.method === 'get') {

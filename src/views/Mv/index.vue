@@ -62,6 +62,7 @@
 <script>
 import { Dialog } from 'vant';
 import BottomPlayer from "@/components/Layout/BottomPlayer"
+import axios from 'axios';
 export default {
   name: 'Mv',
   data() {
@@ -69,10 +70,6 @@ export default {
       activeNames: ['1'],
       width: "100%",
       height: "50%",
-     
-
-
-
       // mv地址
       mvUrl:"",
       //当前分辨率
@@ -108,7 +105,7 @@ export default {
   },
   methods: {
     // 获取 mv 数据
-    getMvData() {
+    async getMvData() {
       const loading = this.$loading({
           lock: true,
           text: 'Loading',
@@ -118,7 +115,7 @@ export default {
       const id = this.$route.params.id;
       const mvid=id;
       console.log(id)
-      this.$api.mv.getMvDetail({
+      await this.$api.mv.getMvDetail({
         mvid
       }).then(res => {
         if(res.code == 200) {
@@ -142,7 +139,10 @@ export default {
           loading.close();
 
           this.$eventBus.$emit('musicPause');
-        
+          
+          
+
+
         }else{
           Dialog.alert({
             title: '提示',
@@ -155,15 +155,14 @@ export default {
           });
         }
       });
-      this.$api.mv.getMvUrl({
+      await this.$api.mv.getMvUrl({
         id
       }).then(res => {
         if(res.code == 200) {
          
           this.mvUrl = res.data.url;
           this.mvR = res.data.r;
-          
-         
+
         }else{
           Dialog.alert({
             title: '提示',
@@ -175,7 +174,28 @@ export default {
       
       });
 
-
+      var Param={
+            mvId:id,
+            name:this.name,
+            artistId:this.artistId,
+            artistName:this.artistName,
+            brs : this.mvR,
+            description:this.desc,
+            duration:this.duration,
+            playCount:this.playCount,
+            publishTime:this.publishTime,
+            shareCount:this.shareCount,
+          }
+          if(this.artists[1]){
+            Param.artistId += '、' + this.artists[1].id;
+            Param.artistName += '、' + this.artists[1].name;
+          }
+          //保存到数据库
+          await axios.post('http://localhost:8080/music/mv/saveNewMv',Param).then(res => {
+            console.log(res);
+          }).catch(err => {
+            console.log(err);
+          });
 
 
 

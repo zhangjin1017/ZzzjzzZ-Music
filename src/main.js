@@ -6,6 +6,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import Vant from 'vant';
 import 'vant/lib/index.css';
 
+
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
@@ -21,6 +22,7 @@ import api  from './api'
 
 Vue.use(ElementUI);
 Vue.use(Vant);
+
 
 Vue.prototype.$api = api
 

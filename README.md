@@ -1,7 +1,5 @@
 <div align="center">
-  <a href="https://music.xcj.im/">
-    <img src="https://raw.githubusercontent.com/ixcj/caiji-music/dev/public/img/icons/android-chrome-192x192.png" width="192">
-  </a>
+  
   <h2>音乐</h2>
   <p>基于Vue的响应式音乐播放器</p>
 </div>

@@ -3,86 +3,28 @@
     <div class="main">
       <div class="form-container" :class="loginMode">
         <div class="form-item-box">
-          <v-form
-            v-model="value"
-            ref="accountForm"
-            @keyup.enter.native="handleAccountLogin"
-          >
-            <v-text-field
-              v-model="account"
-              :rules="rules.Email"
-              label="输入邮箱"
-              outlined
-              required
-            ></v-text-field>
-            <v-text-field
-              name="password"
-              v-model="password"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="rules.password"
-              :type="showPassword ? 'text' : 'password'"
-              label="输入密码"
-              outlined
-              @click:append="showPassword = !showPassword"
-            ></v-text-field>
-            <v-btn
-              style="width: 100%;"
-              x-large
-              color="primary"
-              :loading="loading"
-              @click="handleAccountLogin"
-            >密码登录</v-btn>
+          <v-form v-model="value" ref="accountForm" @keyup.enter.native="handleAccountLogin">
+            <v-text-field v-model="account" :rules="rules.Email" label="输入邮箱" outlined required></v-text-field>
+            <v-text-field name="password" v-model="password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :rules="rules.password" :type="showPassword ? 'text' : 'password'" label="输入密码" outlined @click:append="showPassword = !showPassword"></v-text-field>
+            <v-btn style="width: 100%;" x-large color="primary" :loading="loading" @click="handleAccountLogin">密码登录</v-btn>
           </v-form>
         </div>
         <div class="form-item-box">
-          <v-form
-            v-model="value"
-            ref="captchaForm"
-            @keyup.enter.native="handleCodeLogin"
-          >
-            <v-text-field
-              v-model="account"
-              :rules="rules.Email"
-              ref="captchaFormPhone"
-              label="输入邮箱"
-              outlined
-              required
-            ></v-text-field>
+          <v-form v-model="value" ref="captchaForm" @keyup.enter.native="handleCodeLogin">
+            <v-text-field v-model="account" :rules="rules.Email" ref="captchaFormPhone" label="输入邮箱" outlined required></v-text-field>
             <v-row>
               <v-col cols="7">
-                <v-text-field
-                  v-model="captcha"
-                  :rules="rules.captcha"
-                  label="输入验证码"
-                  outlined
-                ></v-text-field>
+                <v-text-field v-model="captcha" :rules="rules.captcha" label="输入验证码" outlined></v-text-field>
               </v-col>
               <v-col cols="5">
-                <v-btn
-                  x-large
-                  class="get-captcha-btn"
-                  :loading="getCaptchaLoading"
-                  :disabled="Boolean(getCaptchaTimeout)"
-                  @click="getCaptcha"
-                >{{ getCaptchaTimeout > 0 ? `${getCaptchaTimeout}秒` : '获取验证码' }}</v-btn>
+                <v-btn x-large class="get-captcha-btn" :loading="getCaptchaLoading" :disabled="Boolean(getCaptchaTimeout)" @click="getCaptcha">{{ getCaptchaTimeout > 0 ? `${getCaptchaTimeout}秒` : '获取验证码' }}</v-btn>
               </v-col>
             </v-row>
-            <v-btn
-              style="width: 100%;"
-              x-large
-              color="primary"
-              :loading="loading"
-              @click="handleCodeLogin"
-            >验证码登录</v-btn>
+            <v-btn style="width: 100%;" x-large color="primary" :loading="loading" @click="handleCodeLogin">验证码登录</v-btn>
           </v-form>
         </div>
       </div>
-      <v-btn
-        rounded
-        class="switch"
-        :class="loginMode"
-        @click="switchLoginMode"
-      >
+      <v-btn rounded class="switch" :class="loginMode" @click="switchLoginMode">
         {{ loginModeEnum[loginMode].left }}
         {{ loginModeEnum[loginMode].text }}
         {{ loginModeEnum[loginMode].right }}
@@ -92,10 +34,10 @@
 </template>
 
 <script>
-
 import { validateTel, validateEmail } from '@/utils/validate'
 import { Dialog } from 'vant'
-
+import axios from 'axios'
+import store from '@/store'
 export default {
   name: 'Account',
   data() {
@@ -125,127 +67,145 @@ export default {
       captcha: '',
       isGetCaptcha: true,
       rules: {
-        Email: [
-          v => !!v || '邮箱不能为空',
-          v => validateEmail(v) || '邮箱格式错误'
-        ],
+        Email: [v => !!v || '邮箱不能为空', v => validateEmail(v) || '邮箱格式错误'],
         // phone: [
         //   v => !!v || '手机号不能为空',
         //   v => validateTel(v) || '手机号格式错误'
         // ],
-        password: [
-          v => !!v || '密码不能为空'
-        ],
-        captcha: [
-          v => this.isGetCaptcha || !!v || '验证码不能为空'
-        ]
+        password: [v => !!v || '密码不能为空'],
+        captcha: [v => this.isGetCaptcha || !!v || '验证码不能为空']
       }
-    };
+    }
   },
   methods: {
     handleAccountLogin() {
-
-      Dialog.alert({
-      title: '提示',
-      message: '由于服务器未启动,登录功能暂未开放',
-      }).then(() => {
-          // on close
-      });
-      // if (this.loading) return
-
-      // if(this.$refs.accountForm.validate()) {
-      //   const md5_password = md5(this.password)
-        
-      //   this.loading = true
-
-      //   if(validateTel(this.account)) {
-      //     this.$api.login.phoneLogin({
-      //       phone: this.account,
-      //       md5_password
-      //     }).then(res => {
-      //       if(res.code == 200) {
-      //         this.$emit('login', res)
-      //       }
-      //     }).finally(() => { this.loading = false })
-      //   } else if(validateEmail(this.account)) {
-      //     this.$api.login.emailLogin({
-      //       email: this.account,
-      //       md5_password
-      //     }).then(res => {
-      //       if(res.code == 200) {
-      //         this.$emit('login', res)
-      //       }
-      //     }).finally(() => { this.loading = false })
-      //   }
-      // }
-
+      //所有输入框都不为空
+      if (this.account && this.password) {
+        this.loading = true
+        //邮箱 密码登录
+        axios
+          .post('http://localhost:8080/music/login/loginByPassword/' + this.account + '/' + this.password)
+          .then(res => {
+            console.log(res)
+            if (res.data.code === 200) {
+              this.$message({
+                content: '登录成功'
+              })
+              this.loading = false
+              //存储用户信息
+              // localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+              var data={
+                profile:res.data.data,
+                account:res.data.data.email
+              }
+              this.$emit('login', data)
+              //跳转到个人信息页面
+              this.$router.push('/user')
+             
+            } else {
+              this.$message({
+                content: res.data.msg
+              })
+              this.loading = false
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            this.loading = false
+          })
+      } else {
+        this.$message({
+          content: '请填写完整信息'
+        })
+      }
     },
     getCaptcha() {
+       //如果邮箱为空
+       if (!this.account) {
+        this.$message({
+          content: '邮箱不能为空',
+        })
+        return
+      }else{
+        //邮箱格式错误
+        if (!validateEmail(this.account)) {
+          this.$message({
+            content: '邮箱格式错误',
+          })
+          return
+        }
+      
 
-      Dialog.alert({
-      title: '提示',
-      message: '由于服务器未启动,获取验证码功能暂未开放',
-      }).then(() => {
-          // on close
-      });
-
-      // if (this.getCaptchaLoading || this.getCaptchaTimeout) return
-
-      // this.isGetCaptcha = true
-      // if (this.$refs.captchaForm.validate()) {
-      //   this.getCaptchaLoading = true
-      //   this.$api.login.captchaSent({
-      //     phone: this.phone
-      //   }).then(res => {
-      //     if(res.code == 200) {
-      //       this.getCaptchaTimeout = 120
-      //       this.getCaptchaTimer = setInterval(() => {
-      //         if (--this.getCaptchaTimeout <= 0) {
-      //           clearInterval(this.getCaptchaTimer)
-      //           this.getCaptchaTimeout = 0
-      //         }
-      //       }, 1000)
-      //       this.$message({
-      //         content: '验证码发送成功，请注意查收！',
-      //       })
-      //     }
-      //   }).finally(() => { this.getCaptchaLoading = false })
-      // }
+      this.getCaptchaLoading = true
+      //访问login/sendVerifyCodeForLogin/{email}接口
+      axios.get('http://localhost:8080/music/login/sendVerifyCodeForLogin/'+this.account).then(res => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$message({
+            content: '验证码已发送',
+          })
+          this.getCaptchaLoading = false
+          this.getCaptchaTimeout = 60
+          this.getCaptchaTimer = setInterval(() => {
+            this.getCaptchaTimeout--
+            if (this.getCaptchaTimeout <= 0) {
+              clearInterval(this.getCaptchaTimer)
+              this.getCaptchaLoading = false
+            }
+          }, 1000)
+        } else {
+          this.$message({
+            content: res.data.msg,
+          })
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    }
     },
     handleCodeLogin() {
+      //所有输入框都不为空
+      if (this.account && this.captcha) {
+        this.loading = true
+        //邮箱 验证码登录
+        axios
+          .post('http://localhost:8080/music/login/doVerifyCodeForLogin/' + this.account + '/' + this.captcha)
+          .then(res => {
+            console.log(res)
+            if (res.data.code === 200) {
+              this.$message({
+                content: '登录成功'
+              })
+              this.loading = false
+              //存储用户信息
+              localStorage.setItem('userInfo', JSON.stringify(res.data.data))
 
-      Dialog.alert({
-      title: '提示',
-      message: '由于服务器未启动,登录功能暂未开放',
-      }).then(() => {
-          // on close
-      });
-
-      // if (this.loading) return
-
-      // this.isGetCaptcha = false
-      // if(this.$refs.captchaForm.validate()) {
-      //   this.loading = true
-      //   const { phone, captcha } = this
-      //   this.$api.login.phoneLogin({
-      //     phone,
-      //     captcha
-      //   }).then(res => {
-      //     if(res.code == 200) {
-      //       this.$emit('login', res)
-      //     }
-      //   }).finally(() => { this.loading = false })
-      // }
+              //跳转到首页
+              this.$router.push({ path: '/' })
+            } else {
+              this.$message({
+                content: res.data.msg
+              })
+              this.loading = false
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            this.loading = false
+          })
+      } else {
+        this.$message({
+          content: '请填写完整信息'
+        })
+      }
     },
     switchLoginMode() {
-      this.loginMode === 'password'
-        ? this.loginMode = 'code'
-        : this.loginMode = 'password'
+      this.loginMode === 'password' ? (this.loginMode = 'code') : (this.loginMode = 'password')
       this.$refs.accountForm.resetValidation()
       this.$refs.captchaForm.resetValidation()
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped lang="scss">
