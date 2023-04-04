@@ -1,20 +1,60 @@
 <template>
   <div class="personal-center">
+    <v-row>
+      <v-col cols="12" md="4">
+        <v-card
+          class="mx-auto"
+          max-width="344"
+        >
+        <v-img v-if="$store.getters.userInfo.img" height="200px" :src="$store.getters.userInfo.img" />
+        <v-img v-else height="200px" src="/src/assets/images/defaultAvatar.svg" />
+          <v-card-title>
+            {{ $store.getters.userInfo.name }}
+          </v-card-title>
+          
+
+
+          <v-card-subtitle>
+            {{ $store.getters.userInfo.email }}
+          </v-card-subtitle>
+
+          <v-card-text>
+            {{ $store.getters.userInfo.introduction }}
+          </v-card-text>
+        
+          <v-card-actions>
+            
+        <v-btn
+          color="red lighten-2"
+          dark
+          @click="dialog = true"
+        >
+          退出登录
+        </v-btn>
+      
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+
+
+
+
+
+
+
+
+
+
+
+
     <v-dialog
       v-model="dialog"
       persistent
       width="300"
     >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="red lighten-2"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          退出登录
-        </v-btn>
-      </template>
+      
 
       <v-card>
         <v-card-title class="headline">提示</v-card-title>
@@ -42,6 +82,10 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+
+
+
+
     </v-dialog>
   </div>
 </template>

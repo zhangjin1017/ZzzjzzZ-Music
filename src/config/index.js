@@ -52,10 +52,15 @@ const menuList = [
     text: '首页'
   },
   {
-    to: '/MyInfo',
+    to: '/User',
     icon: 'mdi-information',
-    text: '我的信息'
+    text: '个人中心'
   },
+  // {
+  //   to: '/MyInfo',
+  //   icon: 'mdi-information',
+  //   text: '我的信息'
+  // },
   {
     to: '/MyPlaylist',
     icon: 'mdi-music',

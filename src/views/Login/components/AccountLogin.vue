@@ -61,9 +61,9 @@ export default {
       getCaptchaLoading: false,
       getCaptchaTimeout: 0,
       getCaptchaTimer: null,
-      account: '',
+      account: '1216916137@qq.com',
       phone: '',
-      password: '',
+      password: '123456',
       captcha: '',
       isGetCaptcha: true,
       rules: {
@@ -92,15 +92,15 @@ export default {
                 content: '登录成功'
               })
               this.loading = false
-              //存储用户信息
-              // localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+              
               var data={
-                profile:res.data.data,
-                account:res.data.data.email
+                userInfo:res.data.data
               }
               this.$emit('login', data)
-              //跳转到个人信息页面
-              this.$router.push('/user')
+              //跳转到首页
+              this.$router.push({ path: '/' })
+
+              
              
             } else {
               this.$message({
@@ -178,8 +178,7 @@ export default {
               })
               this.loading = false
               //存储用户信息
-              localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-
+              this.$emit('login', data)
               //跳转到首页
               this.$router.push({ path: '/' })
             } else {

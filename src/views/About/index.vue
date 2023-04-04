@@ -6,6 +6,7 @@
       <p>{{ title }}是一款在线音乐播放器，提供歌曲搜索、免费歌曲在线试听、MV播放等功能。</p>
       <p><a class="url" v-for="(item, index) in aboutUrls" :key="index" :href="item.value" target="_blank">{{ item.text }}</a></p>
     </div>
+    <p class="tips1">版权说明：本站所有歌曲均来自互联网，仅供学习交流使用，版权归原作者所有，如有侵权请联系删除。</p>
     <p class="tips">作者：ZzzjzzZ</p>
   </div>
 </template>
@@ -55,6 +56,14 @@ export default {
   .tips {
     position: absolute;
     bottom: 0;
+    width: 100%;
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+  }
+  .tips1 {
+    position: absolute;
+    bottom: 20px;
     width: 100%;
     font-size: 0.8rem;
     color: #999;

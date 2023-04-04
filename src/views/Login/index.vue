@@ -64,9 +64,7 @@ export default {
     },
     
     handleLogin(data) {
-      const userInfo = data.profile
-      userInfo.account = data.account
-      userInfo.cookie = data.cookie
+      const userInfo = data.userInfo
 
       this.setUserInfo(userInfo)
 
