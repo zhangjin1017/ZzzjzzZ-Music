@@ -13,6 +13,7 @@
       @canplay="canplay"
       @error="error"
     ></audio>
+    
     <!-- 进度条 -->
     <ProgressBar
       class="bottom-player-progress-bar"
@@ -61,6 +62,20 @@
         @handlePrev="handleNextPrev('prev')"
       />
     </v-dialog>
+    <!-- 收藏小爱心 -->
+    <div class="bottom-player-love">
+      <v-btn
+        icon
+        @click="love"
+      >
+        <v-icon
+          :color="loveColor"
+          size="30"
+        >
+          mdi-heart
+        </v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -73,6 +88,7 @@ import MiniPlayer from './components/MiniPlayer'
 import Mv from "@/views/Mv"
 import { detail} from '@/api/song'
 import axios from 'axios'
+import { parse } from 'path'
 export default {
   name: 'BottomPlayer',
   components: {
@@ -91,7 +107,7 @@ export default {
       noUpdateCurrentTime: false,
       loading: false,
       showFullPlayer: false,
-    
+      loveColor: 'gray'
     };
   },
   methods: {
@@ -101,8 +117,53 @@ export default {
     ...mapActions('song', [
       'getCurrentSongUrl'
     ]),
+    // 收藏音乐
+    love() {
+      if (this.loveColor === 'gray') {
+        this.loveColor = 'red'
+        this.addtoPlayList()
+      } else {
+        this.loveColor = 'gray'
+        this.delfromPlayList()
+      }
+    },
+    addtoPlayList() {
+      
+      var Param = {
+        /** 用户id */
+        userId: JSON.parse(localStorage.getItem('userInfo')).userId,
+        /** 歌曲id */
+        musicId: JSON.parse(localStorage.getItem('currentSongInfo')).id,
+        /** 歌名 */
+        name: JSON.parse(localStorage.getItem('currentSongInfo')).name,
+        /** 作者 */
+        artists: JSON.parse(localStorage.getItem('currentSongInfo')).ar[0].name,
+        /** 作者id */
+        artistsId: JSON.parse(localStorage.getItem('currentSongInfo')).ar[0].id,
+        /** 封面 */
+        img: JSON.parse(localStorage.getItem('currentSongInfo')).al.picUrl,
+      }
+      if(JSON.parse(localStorage.getItem('currentSongInfo')).ar[1]){
+        Param.artists+="、"+JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].name
+        Param.artistsId+="、"+JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].id
+      }
+      console.log(Param)
+      axios.post('http://localhost:8080/music/details/addDetails', Param
+      ).then(res => {
+        console.log(res)
+      })
+
+    },
+    delfromPlayList() {
+      axios.post('http://localhost:8080/music/details/deleteDetails/'
+      +JSON.parse(localStorage.getItem('userInfo')).userId+"/"
+      +JSON.parse(localStorage.getItem('currentSongInfo')).id
+      ).then(res => {
+        console.log(res)
+      })
+    },
     // 播放音乐
-    musicPlay() {
+    async musicPlay() {
       
       if(!this.currentSongInfo.id) return
 
@@ -118,7 +179,7 @@ export default {
 
     console.log(this.currentSongInfo.id)
     //获取这首歌的信息
-    this.$api.song.detail({ids:this.currentSongInfo.id+""}).then(res=>{
+     await this.$api.song.detail({ids:this.currentSongInfo.id+""}).then(res=>{
       console.log(res)
       var Param = {
             /** 歌曲id */
@@ -132,7 +193,7 @@ export default {
             /** 作者 */
               artists: '',
             /** 作者id */
-              artistsId: 0,
+              artistsId: '',
             /** 发布时间 */
               publicTime: ''
           }
@@ -165,7 +226,34 @@ export default {
 
           console.log(Param)
            //保存到数据库
-            axios.post('http://localhost:8080/music/music/saveNewMusic',Param).then(res => {
+             axios.post('http://localhost:8080/music/music/saveNewMusic',Param).then(res => {
+            }).catch(err => {
+              console.log(err)
+            })
+            var Param2 = {
+              userId:JSON.parse(localStorage.getItem("userInfo")).userId,
+              userName:JSON.parse(localStorage.getItem("userInfo")).name,
+              /** 歌曲id */
+                musicId: res.songs[0].id,
+              /** 歌名 */
+                name: res.songs[0].name,
+              /** 封面 */
+                coverImg: res.songs[0].al.picUrl,
+              /** 作者 */
+                artists: res.songs[0].ar[0].name,
+              /** 作者id */
+                artistsId: res.songs[0].ar[0].id,
+             
+              
+            }
+            if(res.songs[0].ar[1]){
+              Param.artists += '、' + res.songs[0].ar[1].name;
+              Param.artistsId += ',' + res.songs[0].ar[1].id;
+         
+          }
+
+            //添加播放记录
+             axios.post('http://localhost:8080/music/playrecord/saveNewPlayRecord',Param2).then(res => {
               console.log(res)
             }).catch(err => {
               console.log(err)
@@ -173,6 +261,8 @@ export default {
            
       
     })
+    
+
 
     },
     // 时间戳转换为年月日
@@ -433,6 +523,25 @@ export default {
   }
   &-box {
     width: 100%;
+  }
+}
+.bottom-player-love{
+  //居中
+  
+  margin-top: 35px;
+  left: 100%;
+  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  .iconfont {
+    font-size: 20px;
+    color: #fff;
   }
 }
 </style>

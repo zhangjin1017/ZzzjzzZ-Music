@@ -13,7 +13,7 @@
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title>{{ userInfo.userId ? userInfo.name : '请登录' }}</v-list-item-title>
-      <v-list-item-subtitle>{{ userInfo.userId ? `村龄：${ villageAge(userInfo.createTime) }` : '登录以查看更多' }}</v-list-item-subtitle>
+      <v-list-item-subtitle>{{ userInfo.userId ? `歌龄：${ villageAge(userInfo.createTime) }` : '登录以查看更多' }}</v-list-item-subtitle>
     </v-list-item-content>
   </v-list-item>
 </template>

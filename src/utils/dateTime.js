@@ -11,7 +11,11 @@ export function timestampToMinute (val) {
 
 // 计算村龄
 export function villageAge (timestamp) {
-  const date = new Date(Date.now() - timestamp)
+
+  
+
+  const date = new Date(Date.now() - Date.parse(timestamp))
+
   return `${ date.getFullYear() - 1970 }年${ date.getMonth() ? `${ date.getMonth() }个月` : '' }`
 }
 
