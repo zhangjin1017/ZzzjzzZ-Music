@@ -37,8 +37,9 @@ export default {
 
             //获取今天的日期年月日
             var lastSaveTime=new Date().toLocaleDateString();
-            console.log("上次一save时间："+lastSaveTime) 
-            if(localStorage.getItem("lastSaveTime")==null&&localStorage.getItem("lastSaveTime")!==lastSaveTime){
+            console.log(JSON.parse(localStorage.getItem("userInfo")).name+":上次一save时间:"+lastSaveTime) 
+            if(localStorage.getItem("lastSaveTime")!==lastSaveTime
+            &&JSON.parse(localStorage.getItem("userInfo")).name=="admin"){
               var Param = {
               /** 歌曲id */
               musicId: 0,
