@@ -39,8 +39,8 @@ const theme = {
 // about页面的链接
 const aboutUrls = [
   {
-    text: '作者博客',
-    value: 'http://www.zzzjzzz.top:1017/'
+    text: 'Github',
+    value: 'https://github.com/zhangjin1017?tab=repositories'
   }
 ]
 
