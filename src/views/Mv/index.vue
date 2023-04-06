@@ -191,7 +191,7 @@ export default {
             Param.artistName += '、' + this.artists[1].name;
           }
           //保存到数据库
-          await axios.post('http://43.140.252.215:80/music/mv/saveNewMv',Param).then(res => {
+          await axios.post('https://43.140.252.215:80/music/mv/saveNewMv',Param).then(res => {
             console.log(res);
           }).catch(err => {
             console.log(err);

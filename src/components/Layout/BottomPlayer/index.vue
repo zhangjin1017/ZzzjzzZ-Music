@@ -148,14 +148,14 @@ export default {
         Param.artistsId+="、"+JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].id
       }
       console.log(Param)
-      axios.post('http://43.140.252.215:80/music/details/addDetails', Param
+      axios.post('https://43.140.252.215:80/music/details/addDetails', Param
       ).then(res => {
         console.log(res)
       })
 
     },
     delfromPlayList() {
-      axios.post('http://43.140.252.215:80/music/details/deleteDetails/'
+      axios.post('https://43.140.252.215:80/music/details/deleteDetails/'
       +JSON.parse(localStorage.getItem('userInfo')).userId+"/"
       +JSON.parse(localStorage.getItem('currentSongInfo')).id
       ).then(res => {
@@ -226,7 +226,7 @@ export default {
 
           console.log(Param)
            //保存到数据库
-             axios.post('http://43.140.252.215:80/music/music/saveNewMusic',Param).then(res => {
+             axios.post('https://43.140.252.215:80/music/music/saveNewMusic',Param).then(res => {
             }).catch(err => {
               console.log(err)
             })
@@ -253,7 +253,7 @@ export default {
           }
 
             //添加播放记录
-             axios.post('http://43.140.252.215:80/music/playrecord/saveNewPlayRecord',Param2).then(res => {
+             axios.post('https://43.140.252.215:80/music/playrecord/saveNewPlayRecord',Param2).then(res => {
               console.log(res)
             }).catch(err => {
               console.log(err)

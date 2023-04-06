@@ -84,7 +84,7 @@ export default {
         this.loading = true
         //邮箱 密码登录
         axios
-          .post('http://43.140.252.215:80/music/login/loginByPassword/' + this.account + '/' + this.password)
+          .post('https://43.140.252.215:80/music/login/loginByPassword/' + this.account + '/' + this.password)
           .then(res => {
             console.log(res)
             if (res.data.code === 200) {
@@ -138,7 +138,7 @@ export default {
 
       this.getCaptchaLoading = true
       //访问login/sendVerifyCodeForLogin/{email}接口
-      axios.get('http://43.140.252.215:80/music/login/sendVerifyCodeForLogin/'+this.account).then(res => {
+      axios.get('https://43.140.252.215:80/music/login/sendVerifyCodeForLogin/'+this.account).then(res => {
         console.log(res)
         if (res.data.code === 200) {
           this.$message({
@@ -169,7 +169,7 @@ export default {
         this.loading = true
         //邮箱 验证码登录
         axios
-          .post('http://43.140.252.215:80/music/login/doVerifyCodeForLogin/' + this.account + '/' + this.captcha)
+          .post('https://43.140.252.215:80/music/login/doVerifyCodeForLogin/' + this.account + '/' + this.captcha)
           .then(res => {
             console.log(res)
             if (res.data.code === 200) {
