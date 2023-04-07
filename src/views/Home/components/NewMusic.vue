@@ -88,7 +88,7 @@ export default {
               Param.publicTime = this.formatDate(this.dataList[i].album.publishTime)
               //依次保存到数据库
               await axios
-                .post('http://localhost:8080/music/music/saveNewMusic', Param)
+                .post('http://43.140.252.215:808080/music/music/saveNewMusic', Param)
                 .then(res => {
                   //  console.log(res)
                 })
@@ -155,7 +155,7 @@ export default {
       // console.log(Param)
       //保存到数据库
       axios
-        .post('http://localhost:8080/music/artist/saveNewArtist', Param)
+        .post('http://43.140.252.215:808080/music/artist/saveNewArtist', Param)
         .then(res => {
           //  console.log(res)
         })

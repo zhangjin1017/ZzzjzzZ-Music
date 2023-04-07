@@ -124,7 +124,7 @@ export default {
       }else{
       this.getCaptchaLoading = true
       //访问login/sendVerifyCodeForRegister/{email}接口
-      axios.get('http://localhost:8080/music/login/sendVerifyCodeForRegister/'+this.account).then(res => {
+      axios.get('http://43.140.252.215:808080/music/login/sendVerifyCodeForRegister/'+this.account).then(res => {
         console.log(res)
         if (res.data.code === 200) {
           this.$message({
@@ -160,7 +160,7 @@ export default {
       if (this.account && this.password && this.repassword && this.captcha) {
         this.loading = true
         //访问login/doVerifyCodeForRegister/{email}/{code}/{password}接口
-        axios.post('http://localhost:8080/music/login/doVerifyCodeForRegister/'
+        axios.post('http://43.140.252.215:808080/music/login/doVerifyCodeForRegister/'
       +this.account+"/"+this.captcha+"/"+this.password).then(res => {
         console.log(res)
         if (res.data.code === 200) {
