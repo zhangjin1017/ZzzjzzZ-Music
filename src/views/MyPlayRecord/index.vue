@@ -109,7 +109,7 @@ export default {
       this.unfold = false
       this.listError = false
       
-      axios.get("https://43.140.252.215:8080/music/playrecord/getPlayRecordById/"+JSON.parse(localStorage.getItem("userInfo")).userId).then(res => {
+      axios.get("http://43.140.252.215:8080/music/playrecord/getPlayRecordById/"+JSON.parse(localStorage.getItem("userInfo")).userId).then(res => {
         
         for (let i = 0; i < res.data.data.length; i++) {
           this.trackIds += res.data.data[i].musicId + ",";
