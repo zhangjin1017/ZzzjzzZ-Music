@@ -1,77 +1,28 @@
 <template>
   <div class="bottom-player">
-    <audio
-      ref="player"
-      id="audio"
-      preload
-      :src="musicUrl"
-      :key="key"
-      @play="setPlayStatus"
-      @pause="setPlayStatus"
-      @ended="ended"
-      @timeupdate="timeupdate"
-      @canplay="canplay"
-      @error="error"
-    ></audio>
-    
+    <audio ref="player" id="audio" preload :src="musicUrl" :key="key" @play="setPlayStatus" @pause="setPlayStatus"
+      @ended="ended" @timeupdate="timeupdate" @canplay="canplay" @error="error"></audio>
+
     <!-- 进度条 -->
-    <ProgressBar
-      class="bottom-player-progress-bar"
-      :currentTime.sync="currentTime"
-      :endTime="endTime"
-      @setCurrentTime="setCurrentTime"
-      @noUpdateCurrentTime="noUpdateCurrentTime = true"
-    />
+    <ProgressBar class="bottom-player-progress-bar" :currentTime.sync="currentTime" :endTime="endTime"
+      @setCurrentTime="setCurrentTime" @noUpdateCurrentTime="noUpdateCurrentTime = true" />
     <!-- 迷你播放器 -->
-    <MiniPlayer
-      class="bottom-player-box"
-      :currentSongInfo="currentSongInfo"
-      :currentTime="currentTime"
-      :endTime="endTime"
-      :playStatus="playStatus"
-      :loading="loading"
-      @play="musicPlay"
-      @pause="musicPause"
-      @handleNext="handleNextPrev('next')"
-      @handlePrev="handleNextPrev('prev')"
-    />
-    
-    <v-dialog
-      v-model="showFullPlayer"
-      persistent
-      no-click-animation
-      eager
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
+    <MiniPlayer class="bottom-player-box" :currentSongInfo="currentSongInfo" :currentTime="currentTime" :endTime="endTime"
+      :playStatus="playStatus" :loading="loading" @play="musicPlay" @pause="musicPause"
+      @handleNext="handleNextPrev('next')" @handlePrev="handleNextPrev('prev')" />
+
+    <v-dialog v-model="showFullPlayer" persistent no-click-animation eager fullscreen hide-overlay
+      transition="dialog-bottom-transition">
       <!-- 完整播放器 -->
-      <FullPlayer
-        :show="showFullPlayer"
-        :currentSongInfo="currentSongInfo"
-        :currentTime.sync="currentTime"
-        :currentTimeMillisecond="currentTimeMillisecond"
-        :endTime="endTime"
-        :playStatus="playStatus"
-        :loading="loading"
-        @play="musicPlay"
-        @pause="musicPause"
-        @close="closeFullPlayer"
-        @setCurrentTime="setCurrentTime"
-        @handleNext="handleNextPrev('next')"
-        @handlePrev="handleNextPrev('prev')"
-      />
+      <FullPlayer :show="showFullPlayer" :currentSongInfo="currentSongInfo" :currentTime.sync="currentTime"
+        :currentTimeMillisecond="currentTimeMillisecond" :endTime="endTime" :playStatus="playStatus" :loading="loading"
+        @play="musicPlay" @pause="musicPause" @close="closeFullPlayer" @setCurrentTime="setCurrentTime"
+        @handleNext="handleNextPrev('next')" @handlePrev="handleNextPrev('prev')" />
     </v-dialog>
     <!-- 收藏小爱心 -->
     <div class="bottom-player-love">
-      <v-btn
-        icon
-        @click="love"
-      >
-        <v-icon
-          :color="loveColor"
-          size="30"
-        >
+      <v-btn icon @click="love">
+        <v-icon :color="loveColor" size="30">
           mdi-heart
         </v-icon>
       </v-btn>
@@ -86,7 +37,7 @@ import ProgressBar from './components/ProgressBar'
 import FullPlayer from './components/FullPlayer'
 import MiniPlayer from './components/MiniPlayer'
 import Mv from "@/views/Mv"
-import { detail} from '@/api/song'
+import { detail } from '@/api/song'
 import axios from 'axios'
 import { parse } from 'path'
 export default {
@@ -110,6 +61,7 @@ export default {
       loveColor: 'gray'
     };
   },
+
   methods: {
     ...mapMutations('song', [
       'setCurrentPlayTime'
@@ -117,18 +69,55 @@ export default {
     ...mapActions('song', [
       'getCurrentSongUrl'
     ]),
-    // 收藏音乐
-    love() {
-      if (this.loveColor === 'gray') {
-        this.loveColor = 'red'
-        this.addtoPlayList()
+    //判断当前歌曲是否被收藏
+    isLove() {
+      console.log('判断当前歌曲是否被收藏');
+
+      if (JSON.parse(localStorage.getItem('userInfo')) && JSON.parse(localStorage.getItem('currentSongInfo'))) {
+
+
+
+
+        axios.get('https://43.140.252.215:8080/music/playlist/isPlaylistByUserIdAndMusicId/'
+          + JSON.parse(localStorage.getItem('userInfo')).userId + "/"
+          + JSON.parse(localStorage.getItem('currentSongInfo')).id, {
+          headers: {
+            Authorization: `zzzjzzzzzzjzzzzzzjzzz`,
+          },
+        }
+        ).then(res => {
+          console.log(res.data.data)
+          if (res.data.data) {
+            this.loveColor = 'red'
+          } else {
+            this.loveColor = 'gray'
+          }
+
+        })
       } else {
         this.loveColor = 'gray'
-        this.delfromPlayList()
+        console.log("未登录")
       }
     },
+    // 收藏音乐
+    love() {
+      if (JSON.parse(localStorage.getItem('userInfo'))) {
+        if (this.loveColor === 'gray') {
+
+          this.addtoPlayList()
+        } else {
+
+          this.delfromPlayList()
+        }
+      } else {
+        //提示用户登录
+        this.$store.commit('setLoginDialog', true)
+      }
+    },
+
+
     addtoPlayList() {
-      
+
       var Param = {
         /** 用户id */
         userId: JSON.parse(localStorage.getItem('userInfo')).userId,
@@ -143,125 +132,135 @@ export default {
         /** 封面 */
         img: JSON.parse(localStorage.getItem('currentSongInfo')).al.picUrl,
       }
-      if(JSON.parse(localStorage.getItem('currentSongInfo')).ar[1]){
-        Param.artists+="、"+JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].name
-        Param.artistsId+="、"+JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].id
+      if (JSON.parse(localStorage.getItem('currentSongInfo')).ar[1]) {
+        Param.artists += "、" + JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].name
+        Param.artistsId += "、" + JSON.parse(localStorage.getItem('currentSongInfo')).ar[1].id
       }
       console.log(Param)
-      axios.post('http://43.140.252.215:8080/music/details/addDetails', Param
+      axios.post('http://localhost:8080/music/details/addDetails', Param
       ).then(res => {
         console.log(res)
+        if (res) {
+
+          this.loveColor = 'red'
+        }
+
       })
 
     },
     delfromPlayList() {
-      axios.post('http://43.140.252.215:8080/music/details/deleteDetails/'
-      +JSON.parse(localStorage.getItem('userInfo')).userId+"/"
-      +JSON.parse(localStorage.getItem('currentSongInfo')).id
+      axios.post('http://localhost:8080/music/details/deleteDetails/'
+        + JSON.parse(localStorage.getItem('userInfo')).userId + "/"
+        + JSON.parse(localStorage.getItem('currentSongInfo')).id
       ).then(res => {
         console.log(res)
+        if (res) {
+          this.loveColor = 'gray'
+        }
+
       })
     },
     // 播放音乐
     async musicPlay() {
-      
-      if(!this.currentSongInfo.id) return
 
-      if(this.player?.play && this.player.networkState && this.player.networkState !== 3) {
+      if (!this.currentSongInfo.id) return
+
+      if (this.player?.play && this.player.networkState && this.player.networkState !== 3) {
         this.player.play()
-      
+
       } else {
         this.player.load()
         this.updateKey(this.player.play)
-       
+
       }
       console.log('播放音乐')
+      await this.isLove()
 
-    console.log(this.currentSongInfo.id)
-    //获取这首歌的信息
-     await this.$api.song.detail({ids:this.currentSongInfo.id+""}).then(res=>{
-      console.log(res)
-      var Param = {
-            /** 歌曲id */
-              musicId: 0,
-            /** 歌名 */
-              name: '',
-            /** 描述 */
-              description: '',
-            /** 封面 */
-              coverImg: '',
-            /** 作者 */
-              artists: '',
-            /** 作者id */
-              artistsId: '',
-            /** 发布时间 */
-              publicTime: ''
-          }
-         
-            Param.musicId = res.songs[0].id;
-            Param.name = res.songs[0].name;
-            Param.description = "热度:"+res.songs[0].pop;
-           
-            if(res.songs[0].fee==0){
-              Param.description+="   免费或无版权";
-             }
-             if(res.songs[0].fee==1){
-              Param.description+="   VIP 歌曲";
-             }
-              if(res.songs[0].fee==4){
-                Param.description+="   购买专辑";
-              }
-              if(res.songs[0].fee==8){
-                Param.description+="   非会员可免费播放低音质，会员可播放高音质及下载";
-              }
-            Param.coverImg = res.songs[0].al.picUrl;
-           Param.publicTime = this.formatDate(res.songs[0].publishTime);
-            Param.artists = res.songs[0].ar[0].name;
-            Param.artistsId = res.songs[0].ar[0].id;
-            if(res.songs[0].ar[1]){
-              Param.artists += '、' + res.songs[0].ar[1].name;
-              Param.artistsId += ',' + res.songs[0].ar[1].id;
-         
-          }
+      console.log(this.currentSongInfo.id)
+      //获取这首歌的信息
+      await this.$api.song.detail({ ids: this.currentSongInfo.id + "" }).then(res => {
+        console.log(res)
+        var Param = {
+          /** 歌曲id */
+          musicId: 0,
+          /** 歌名 */
+          name: '',
+          /** 描述 */
+          description: '',
+          /** 封面 */
+          coverImg: '',
+          /** 作者 */
+          artists: '',
+          /** 作者id */
+          artistsId: '',
+          /** 发布时间 */
+          publicTime: ''
+        }
 
-          console.log(Param)
-           //保存到数据库
-             axios.post('http://43.140.252.215:8080/music/music/saveNewMusic',Param).then(res => {
-            }).catch(err => {
-              console.log(err)
-            })
-            var Param2 = {
-              userId:JSON.parse(localStorage.getItem("userInfo")).userId,
-              userName:JSON.parse(localStorage.getItem("userInfo")).name,
-              /** 歌曲id */
-                musicId: res.songs[0].id,
-              /** 歌名 */
-                name: res.songs[0].name,
-              /** 封面 */
-                coverImg: res.songs[0].al.picUrl,
-              /** 作者 */
-                artists: res.songs[0].ar[0].name,
-              /** 作者id */
-                artistsId: res.songs[0].ar[0].id,
-             
-              
-            }
-            if(res.songs[0].ar[1]){
-              Param.artists += '、' + res.songs[0].ar[1].name;
-              Param.artistsId += ',' + res.songs[0].ar[1].id;
-         
-          }
+        Param.musicId = res.songs[0].id;
+        Param.name = res.songs[0].name;
+        Param.description = "热度:" + res.songs[0].pop;
 
-            //添加播放记录
-             axios.post('http://43.140.252.215:8080/music/playrecord/saveNewPlayRecord',Param2).then(res => {
-              console.log(res)
-            }).catch(err => {
-              console.log(err)
-            })
-           
-      
-    })
-    
+        if (res.songs[0].fee == 0) {
+          Param.description += "   免费或无版权";
+        }
+        if (res.songs[0].fee == 1) {
+          Param.description += "   VIP 歌曲";
+        }
+        if (res.songs[0].fee == 4) {
+          Param.description += "   购买专辑";
+        }
+        if (res.songs[0].fee == 8) {
+          Param.description += "   非会员可免费播放低音质，会员可播放高音质及下载";
+        }
+        Param.coverImg = res.songs[0].al.picUrl;
+        Param.publicTime = this.formatDate(res.songs[0].publishTime);
+        Param.artists = res.songs[0].ar[0].name;
+        Param.artistsId = res.songs[0].ar[0].id;
+        if (res.songs[0].ar[1]) {
+          Param.artists += '、' + res.songs[0].ar[1].name;
+          Param.artistsId += ',' + res.songs[0].ar[1].id;
+
+        }
+
+        console.log(Param)
+        //保存到数据库
+        axios.post('http://localhost:8080/music/music/saveNewMusic', Param).then(res => {
+        }).catch(err => {
+          console.log(err)
+        })
+        var Param2 = {
+          userId: JSON.parse(localStorage.getItem("userInfo")).userId,
+          userName: JSON.parse(localStorage.getItem("userInfo")).name,
+          /** 歌曲id */
+          musicId: res.songs[0].id,
+          /** 歌名 */
+          name: res.songs[0].name,
+          /** 封面 */
+          coverImg: res.songs[0].al.picUrl,
+          /** 作者 */
+          artists: res.songs[0].ar[0].name,
+          /** 作者id */
+          artistsId: res.songs[0].ar[0].id,
+
+
+        }
+        if (res.songs[0].ar[1]) {
+          Param.artists += '、' + res.songs[0].ar[1].name;
+          Param.artistsId += ',' + res.songs[0].ar[1].id;
+
+        }
+
+        //添加播放记录
+        axios.post('http://localhost:8080/music/playrecord/saveNewPlayRecord', Param2).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.log(err)
+        })
+
+
+      })
+
 
 
     },
@@ -269,28 +268,28 @@ export default {
     formatDate(date) {
       var date = new Date(date);
       var Y = date.getFullYear() + '-';
-      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
       var D = date.getDate() + ' ';
-      return Y+M+D;
+      return Y + M + D;
     },
 
     // 暂停音乐
     musicPause() {
       console.log('暂停音乐')
-      if(this.player?.pause) {
+      if (this.player?.pause) {
         this.player.pause()
-   
+
       } else {
         this.player.load()
         this.updateKey(this.player.pause)
-  
+
       }
     },
     // 播放下一首
     playNext() {
       console.log('播放下一首')
       const index = this.waitingPlayList.findIndex(item => item.id == this.currentSongInfo.id)
-      if(this.waitingPlayList[index + 1]) {
+      if (this.waitingPlayList[index + 1]) {
         this.$playMusic(this.waitingPlayList[index + 1].id)
       } else {
         this.$playMusic(this.waitingPlayList[0].id)
@@ -300,7 +299,7 @@ export default {
     playPrev() {
       console.log('播放上一首')
       const index = this.waitingPlayList.findIndex(item => item.id == this.currentSongInfo.id)
-      if(index > 0) {
+      if (index > 0) {
         this.$playMusic(this.waitingPlayList[index - 1].id)
       } else {
         this.$playMusic(this.waitingPlayList[this.waitingPlayList.length - 1].id)
@@ -312,7 +311,7 @@ export default {
       const { currentSongInfo, waitingPlayList } = this
       function getRandomId() {
         let id = waitingPlayList[Math.floor(Math.random() * waitingPlayList.length)].id
-        if(id == currentSongInfo.id) {
+        if (id == currentSongInfo.id) {
           return getRandomId()
         } else {
           return id
@@ -322,20 +321,20 @@ export default {
     },
     // 点击下一首按钮
     handleNextPrev(type = 'next', isEnded = false) {
-      if(this.waitingPlayList.length == 1) {
+      if (this.waitingPlayList.length == 1) {
         this.$playMusic(this.currentSongInfo.id)
         return
       }
-      switch(this.$store.getters.playType) {
+      switch (this.$store.getters.playType) {
         case 'orderPlay':
           // 顺序播放
           type == 'next'
-              ? this.playNext()
-              : this.playPrev()
+            ? this.playNext()
+            : this.playPrev()
           break
         case 'singleCycle':
           // 单曲循环
-          if(isEnded) {
+          if (isEnded) {
             this.$playMusic(this.currentSongInfo.id)
           } else {
             type == 'next'
@@ -367,24 +366,24 @@ export default {
       this.setCurrentPlayTime(this.currentTime)
     },
     canplay() {
-      if(this.playStatus) {
+      if (this.playStatus) {
         this.musicPlay()
       }
     },
     error() {
-      if(!this.loading && !this.musicUrl) return
+      if (!this.loading && !this.musicUrl) return
 
       this.updateKey()
     },
 
     // 更新key值
     updateKey(fn) {
-      if(this.updateKeyTimer) {
+      if (this.updateKeyTimer) {
         this.updateKeyTimer = false
         setTimeout(() => {
           this.updateKeyTimer = true
           this.key = random()
-          if(fn) {
+          if (fn) {
             this.$nextTick(() => {
               fn()
             })
@@ -394,8 +393,8 @@ export default {
     },
     // 关闭完整播放器
     closeFullPlayer() {
-      if(this.showFullPlayer = true) {
-        if(this.$store.getters.historyArr.length > 1) {
+      if (this.showFullPlayer = true) {
+        if (this.$store.getters.historyArr.length > 1) {
           this.$router.back()
         } else {
           const { showFullPlayer, ...query } = this.$route.query
@@ -412,7 +411,7 @@ export default {
           artist: this.currentSongInfo.ar.map(item => item.name).join('/'),
           album: this.currentSongInfo.al.name,
           artwork: [
-            { src: this.currentSongInfo.al.picUrl + '?param=512y512',   sizes: '512x512',   type: 'image/png' }
+            { src: this.currentSongInfo.al.picUrl + '?param=512y512', sizes: '512x512', type: 'image/png' }
           ]
         })
       }
@@ -438,19 +437,20 @@ export default {
     currentSongInfo() {
       this.bindMediaObject()
     },
-   
+
   },
   created() {
+    this.isLove()
     // 设置进度条位置
     this.currentTime = this.$store.getters.currentPlayTime
 
     // 获取当前音乐播放链接
-    if(this.currentSongInfo.id) {
+    if (this.currentSongInfo.id) {
       this.getCurrentSongUrl()
     }
-    
+
     // 如果完整播放器展开，关闭完整播放器
-    if(Boolean(this.$route.query.showFullPlayer)) {
+    if (Boolean(this.$route.query.showFullPlayer)) {
       const { showFullPlayer, ...query } = this.$route.query
       this.$router.replace({
         query
@@ -463,11 +463,11 @@ export default {
 
     // 开启进度条计时器
     this.currentTimeTimer = setInterval(() => {
-      if(!this.noUpdateCurrentTime) {
+      if (!this.noUpdateCurrentTime) {
         this.currentTime = parseInt(this.player.currentTime)
       }
     }, 250)
-    
+
     // 绑定媒体对象
     this.bindMediaObject()
     // 绑定媒体对象的上一曲、下一曲
@@ -477,15 +477,15 @@ export default {
     }
 
     //监听Mv.data().isMvOpen
-  //  'Mv.data().isMvOpen'(val){
-  //   if(val){
-  //     console.log('Mv页面已经打开了，我要暂停')
-  //     this.player.pause()
-  //   }else{
-  //     console.log('Mv页面已经关闭了，我要播放')
-  //     this.player.play()
-  //   }
-  //  }
+    //  'Mv.data().isMvOpen'(val){
+    //   if(val){
+    //     console.log('Mv页面已经打开了，我要暂停')
+    //     this.player.pause()
+    //   }else{
+    //     console.log('Mv页面已经关闭了，我要播放')
+    //     this.player.play()
+    //   }
+    //  }
     this.$eventBus.$on('musicPause', (val) => {
       console.log('Mv页面已经打开了，我要暂停')
       this.musicPause();
@@ -514,6 +514,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
+
   &-progress-bar {
     width: 100%;
     position: absolute;
@@ -521,13 +522,15 @@ export default {
     left: 0;
     transform: translateY(-50%);
   }
+
   &-box {
     width: 100%;
   }
 }
-.bottom-player-love{
+
+.bottom-player-love {
   //居中
-  
+
   margin-top: 35px;
   left: 100%;
   transform: translate(-50%, -50%);
@@ -539,6 +542,7 @@ export default {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+
   .iconfont {
     font-size: 20px;
     color: #fff;

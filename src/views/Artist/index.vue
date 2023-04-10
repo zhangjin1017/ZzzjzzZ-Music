@@ -183,7 +183,7 @@ export default {
       // console.log(Param)
       //保存到数据库
       axios
-        .post('http://43.140.252.215:8080/music/artist/saveNewArtist', Param)
+        .post('http://localhost:8080/music/artist/saveNewArtist', Param)
         .then(res => {
            console.log(res)
         })

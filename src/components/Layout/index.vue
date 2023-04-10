@@ -210,6 +210,8 @@ export default {
     }
   },
   created() {
+    
+
     // 锁定浏览器滚动条，防止滚动穿透
     Vue.prototype.$lock = this.lock
 

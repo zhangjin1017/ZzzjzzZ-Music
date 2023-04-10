@@ -37,7 +37,7 @@ export default {
 
             //获取今天的日期年月日
             var lastSaveTime=new Date().toLocaleDateString();
-            console.log(JSON.parse(localStorage.getItem("userInfo")).name+":上次一save时间:"+lastSaveTime) 
+            console.log(JSON.parse(localStorage.getItem("userInfo")).name+":上次一save时间:"+localStorage.getItem("lastSaveTime")) 
             if(localStorage.getItem("lastSaveTime")!==lastSaveTime
             &&JSON.parse(localStorage.getItem("userInfo")).name=="admin"){
               var Param = {
@@ -88,7 +88,7 @@ export default {
               Param.publicTime = this.formatDate(this.dataList[i].album.publishTime)
               //依次保存到数据库
               await axios
-                .post('http://43.140.252.215:8080/music/music/saveNewMusic', Param)
+                .post('http://localhost:8080/music/music/saveNewMusic', Param)
                 .then(res => {
                   //  console.log(res)
                 })
@@ -155,7 +155,7 @@ export default {
       // console.log(Param)
       //保存到数据库
       axios
-        .post('http://43.140.252.215:8080/music/artist/saveNewArtist', Param)
+        .post('http://localhost:8080/music/artist/saveNewArtist', Param)
         .then(res => {
           //  console.log(res)
         })
