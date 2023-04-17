@@ -151,7 +151,7 @@ export default {
       this.unfold = false
       this.listError = false
 
-       await axios.get("http://localhost:8080/music/playlist/getPlaylistById/" + JSON.parse(localStorage.getItem("userInfo")).userId).then(res => {
+       await axios.get("http://43.140.252.215:8080/music/playlist/getPlaylistById/" + JSON.parse(localStorage.getItem("userInfo")).userId).then(res => {
         
         this.renderPlaylist(res.data.data)
       })
@@ -165,7 +165,7 @@ export default {
       this.createTime = data.createTime
      
 
-      await axios.get("http://localhost:8080/music/details/getDetailsById/"+data.id).then(res => {
+      await axios.get("http://43.140.252.215:8080/music/details/getDetailsById/"+data.id).then(res => {
         
         for (let i = 0; i < res.data.data.length; i++) {
           this.trackIds += res.data.data[i].musicId + ",";
