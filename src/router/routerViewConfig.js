@@ -68,14 +68,6 @@ export default [
     }
   },
   {
-    path: 'myInfo',
-    name: 'MyInfo',
-    component: () => import('@/views/MyInfo'),
-    meta: {
-      title: '我的信息'
-    }
-  },
-  {
     path: 'myPlayRecord',
     name: 'MyPlayRecord',
     component: () => import('@/views/MyPlayRecord'),
