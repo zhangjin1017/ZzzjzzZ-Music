@@ -4,6 +4,8 @@
     <RecommendSongLIst />
     <NewMusic />
     <RecommendMv />
+    <el-divider></el-divider>
+    <a style="margin-left: 30%;" href="https://beian.miit.gov.cn/" target="_blank">皖ICP备2022013152号-1</a>  
   </div>
 </template>
 
