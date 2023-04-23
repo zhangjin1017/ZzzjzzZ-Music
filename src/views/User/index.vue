@@ -4,7 +4,7 @@
       <v-col cols="12" md="4">
         <v-card class="mx-auto" max-width="344">
 
-          <v-img height="300px" :src="$store.getters.userInfo.img ? $store.getters.userInfo.img : defaultAvatar"
+          <v-img height="300px" :src="$store.getters.userInfo.img ? 'http://www.zzzjzzz.top:81/prod-api'+$store.getters.userInfo.img : defaultAvatar"
             @error="setDefaultAvatar" />
           <v-card-title>
             {{ $store.getters.userInfo.name }}
@@ -25,7 +25,10 @@
             <v-btn color="green lighten-2" dark @click="modifyInfoDialog = true">
               修改信息
             </v-btn>
-            <v-btn color="red lighten-2" dark @click="dialog = true" style="margin-left: 33%;">
+            <v-btn color="green lighten-2" dark @click="modifyImgDialog = true">
+              修改头像
+            </v-btn>
+            <v-btn color="red lighten-2" dark @click="dialog = true" style="margin-left: 10%;">
               退出登录
             </v-btn>
 
@@ -104,7 +107,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="modifyImgDialog" persistent width="300">
+      <v-card>
+        <v-card-title class="headline">上传头像</v-card-title>
 
+        <el-upload class="avatar-uploader" action="http://43.140.252.215:8080/music/info/uploadAvatar" :show-file-list="false"
+        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :color="'#333'" text @click="!modifyImgLoading && (modifyImgDialog = false)">
+            取消
+          </v-btn>
+          <v-btn :color="$store.getters.mainColor" :loading="modifyImgLoading" text @click="modifyImg">
+            确定
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      
+    </v-dialog>
 
   </div>
 </template>
@@ -128,6 +152,10 @@ export default {
       modifyInfoLoading: false,
       newName: '',
       newIntroduction: '',
+      modifyImgDialog: false,
+      modifyImgLoading: false,
+      imageUrl: '',
+      Img: '',
     };
   },
   mounted() {
@@ -135,6 +163,77 @@ export default {
     this.newIntroduction = this.$store.getters.userInfo.introduction
   },
   methods: {
+
+    handleAvatarSuccess(res, file) {
+      if(res!="error"){
+        this.$message({
+            content: '上传成功!',
+            type: 'success'
+          })
+      this.Img = res
+      this.imageUrl = URL.createObjectURL(file.raw);
+      }
+      
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message({
+            content: '上传头像图片只能是 JPG 格式!',
+            type: 'warning'
+          })
+      }
+      if (!isLt2M) {
+        this.$message({
+            content: '上传头像图片大小不能超过 2MB!',
+            type: 'warning'
+          })
+      }
+      return isJPG && isLt2M;
+    },
+    modifyImg(){
+      axios.post(`http://43.140.252.215:8080/music/info/modifyImg?userId=${JSON.parse(localStorage.getItem("userInfo")).userId}&img=${this.Img}`,)
+      .then(res => {
+        if (res.data.code == 200) {
+          this.$store.commit('user/setUserInfo', {
+            userId: JSON.parse(localStorage.getItem("userInfo")).userId,
+            name: JSON.parse(localStorage.getItem("userInfo")).name,
+            introduction: JSON.parse(localStorage.getItem("userInfo")).introduction,
+            age: JSON.parse(localStorage.getItem("userInfo")).age,
+            cookie: JSON.parse(localStorage.getItem("userInfo")).cookie,
+            createBy: JSON.parse(localStorage.getItem("userInfo")).createBy,
+            createTime: JSON.parse(localStorage.getItem("userInfo")).createTime,
+            email: JSON.parse(localStorage.getItem("userInfo")).email,
+            gender: JSON.parse(localStorage.getItem("userInfo")).gender,
+            img: this.Img,
+            listenTime: JSON.parse(localStorage.getItem("userInfo")).listenTime,
+            remark: JSON.parse(localStorage.getItem("userInfo")).remark,
+            updateBy: JSON.parse(localStorage.getItem("userInfo")).updateBy,
+            updateTime: JSON.parse(localStorage.getItem("userInfo")).updateTime,
+            vipType: JSON.parse(localStorage.getItem("userInfo")).vipType,
+          })
+          this.$message({
+            content: '修改成功',
+            type: 'success'
+          })
+          this.modifyImgDialog = false
+
+          
+        } else {
+          this.$message({
+            content: res.data.msg,
+            type: 'error'
+          })
+        }
+      }).finally(() => {
+        this.modifyImgLoading = false
+      })
+
+
+      
+    },
     setDefaultAvatar() {
       this.avatar = this.defaultAvatar
     },
@@ -157,6 +256,13 @@ export default {
       if (this.oldpass == '') {
         this.$message({
           content: '请输入原密码',
+          type: 'error'
+        })
+        return
+      }
+      if (this.newpass == '') {
+        this.$message({
+          content: '请输入新密码',
           type: 'error'
         })
         return
@@ -242,7 +348,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.personal-center {}
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    margin-left: 37%;
+    text-align: center;
+    border: 1px dashed #d9d9d9;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 
 .sp {
   margin-left: 10%;
