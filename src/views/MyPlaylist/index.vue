@@ -1,14 +1,19 @@
 <template>
   <div class="playlist" v-resize="onResize">
     <div class="playlist-header">
-      <v-responsive class="cover rounded" :aspect-ratio="1" :width="imgSize" :height="imgSize">
+      <v-responsive
+        class="cover rounded"
+        :aspect-ratio="1"
+        :width="imgSize"
+        :height="imgSize"
+      >
         <v-img
           class="cover-img"
-          :src="coverImgUrl"
+          :src="'http://www.zzzjzzz.top:81/prod-api' + coverImgUrl"
           v-show="!loading"
         ></v-img>
       </v-responsive>
-      <div class="text-box" :style="{width: `calc(100% - ${imgSize}px)`}">
+      <div class="text-box" :style="{ width: `calc(100% - ${imgSize}px)` }">
         <v-skeleton-loader
           boilerplate
           class="mx-auto"
@@ -27,23 +32,25 @@
           </v-btn>
           <div
             class="description"
-            :class="{'text-overflow': !unfold}"
+            :class="{ 'text-overflow': !unfold }"
             :style="{ '-webkit-line-clamp': lineClamp }"
             v-if="pageName == 'Playlist'"
             ref="description"
           >
-            {{ description || '并没有描述' }}
-            <span class="arrows" @click="unfold = !unfold" v-show="descriptionOverflow">
-              <v-icon>{{ unfold ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            {{ description || "并没有描述" }}
+            <span
+              class="arrows"
+              @click="unfold = !unfold"
+              v-show="descriptionOverflow"
+            >
+              <v-icon>{{
+                unfold ? "mdi-chevron-up" : "mdi-chevron-down"
+              }}</v-icon>
             </span>
           </div>
           <div v-else class="artist">
-            <div class="text-overflow">
-              所属：{{ userName }}
-            </div>
-            <div class="text-overflow">
-              时间：{{ createTime | formatTime }}
-            </div>
+            <div class="text-overflow">所属：{{ userName }}</div>
+            <div class="text-overflow">时间：{{ createTime | formatTime }}</div>
           </div>
         </v-skeleton-loader>
       </div>
@@ -61,15 +68,17 @@
           <span class="text">加载中...</span>
         </div>
         <div class="loding-box" v-show="listError && !loading">
-          歌曲加载失败，请<span class="text-highlight" style="font-weight: bold; cursor: pointer;" @click="getList">重试</span>
+          歌曲加载失败，请<span
+            class="text-highlight"
+            style="font-weight: bold; cursor: pointer;"
+            @click="getList"
+            >重试</span
+          >
         </div>
       </div>
     </div>
 
-    <v-dialog
-      v-model="dialog"
-      width="300"
-    >
+    <v-dialog v-model="dialog" width="300">
       <v-card>
         <v-card-title class="headline">提示</v-card-title>
 
@@ -79,18 +88,10 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            :color="'#333'"
-            text
-            @click="dialog = false"
-          >
+          <v-btn :color="'#333'" text @click="dialog = false">
             取消
           </v-btn>
-          <v-btn
-            :color="$store.getters.mainColor"
-            text
-            @click="playListAll"
-          >
+          <v-btn :color="$store.getters.mainColor" text @click="playListAll">
             确定
           </v-btn>
         </v-card-actions>
@@ -100,13 +101,13 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import Songs from '@/components/Songs'
-import axios from 'axios';
+import { mapActions } from "vuex";
+import Songs from "@/components/Songs";
+import axios from "axios";
 export default {
-  name: 'Playlist',
+  name: "Playlist",
   components: {
-    Songs
+    Songs,
   },
   data() {
     return {
@@ -114,203 +115,221 @@ export default {
       listLoading: false,
       listError: false,
       unfold: false,
-      pageName: '',
+      pageName: "",
       id: 0,
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       descriptionOverflow: false,
-      coverImgUrl: '',
-      userName: '',
-      createTime: '',
-      trackIds: '',
+      coverImgUrl: "",
+      userName: "",
+      createTime: "",
+      trackIds: "",
       songs: [],
-      dialog: false
+      dialog: false,
     };
   },
   methods: {
-    ...mapActions('song', [
-      'playAll'
-    ]),
+    ...mapActions("song", ["playAll"]),
     onResize() {
-      if(this.pageName !== 'Playlist') return
+      if (this.pageName !== "Playlist") return;
 
-      this.isDescriptionOverflow()
+      this.isDescriptionOverflow();
     },
     isDescriptionOverflow() {
-      if(!this.$refs.description) return
+      if (!this.$refs.description) return;
 
-      if(this.unfold) {
-        this.unfold = false
+      if (this.unfold) {
+        this.unfold = false;
       } else {
-        this.descriptionOverflow = this.$refs.description.scrollHeight - this.$refs.description.clientHeight > 10
+        this.descriptionOverflow =
+          this.$refs.description.scrollHeight -
+            this.$refs.description.clientHeight >
+          10;
       }
     },
     async getData() {
-      this.loading = true
-      this.listLoading = true
-      this.unfold = false
-      this.listError = false
+      this.loading = true;
+      this.listLoading = true;
+      this.unfold = false;
+      this.listError = false;
 
-       await axios.get("http://43.140.252.215:8080/music/playlist/getPlaylistById/" + JSON.parse(localStorage.getItem("userInfo")).userId).then(res => {
-        
-        this.renderPlaylist(res.data.data)
-      })
+      await axios
+        .get(
+          "http://43.140.252.215:8080/music/playlist/getPlaylistById/" +
+            JSON.parse(localStorage.getItem("userInfo")).userId
+        )
+        .then((res) => {
+          this.renderPlaylist(res.data.data);
+        });
     },
-     async renderPlaylist(data) {
-      this.loading = false
+    async renderPlaylist(data) {
+      this.loading = false;
 
-      this.name = data.description
-      this.coverImgUrl = JSON.parse(localStorage.getItem("userInfo")).img
-      this.userName = JSON.parse(localStorage.getItem("userInfo")).name
-      this.createTime = data.createTime
-     
+      this.name = data.description;
+      this.coverImgUrl = JSON.parse(localStorage.getItem("userInfo")).img;
+      this.userName = JSON.parse(localStorage.getItem("userInfo")).name;
+      this.createTime = data.createTime;
 
-      await axios.get("http://43.140.252.215:8080/music/details/getDetailsById/"+data.id).then(res => {
-        
-        for (let i = 0; i < res.data.data.length; i++) {
-          this.trackIds += res.data.data[i].musicId + ",";
-        }
-        //删除最后一个逗号
-        this.trackIds = this.trackIds.substring(0, this.trackIds.length - 1);  
-      })
-      console.log("aaa"+this.trackIds)
-      this.getList()
+      await axios
+        .get(
+          "http://43.140.252.215:8080/music/details/getDetailsById/" + data.id
+        )
+        .then((res) => {
+          for (let i = 0; i < res.data.data.length; i++) {
+            this.trackIds += res.data.data[i].musicId + ",";
+          }
+          //删除最后一个逗号
+          this.trackIds = this.trackIds.substring(0, this.trackIds.length - 1);
+        });
+      console.log("aaa" + this.trackIds);
+      this.getList();
 
       this.$nextTick(() => {
-        this.isDescriptionOverflow()
-      })
+        this.isDescriptionOverflow();
+      });
     },
     getList() {
-      if(!this.trackIds) {
-        this.listLoading = false
+      if (!this.trackIds) {
+        this.listLoading = false;
         //提示没有歌曲
         this.$message({
-          color: 'warning',
-          content: '没有歌曲'
-        })
+          color: "warning",
+          content: "没有歌曲",
+        });
 
-        
-        return
+        return;
       }
-      console.log("1")
-      this.listError = false
-      this.listLoading = true
+      console.log("1");
+      this.listError = false;
+      this.listLoading = true;
 
       // 防止自定义歌单过长（临时解决方案）
-      if (this.trackIds.split(',').length > 1000) {
-        const trackIds = this.trackIds.split(',')
-        trackIds.length = 1000
-        this.trackIds = trackIds.join(',')
+      if (this.trackIds.split(",").length > 1000) {
+        const trackIds = this.trackIds.split(",");
+        trackIds.length = 1000;
+        this.trackIds = trackIds.join(",");
         this.$message({
-          color: 'warning',
-          content: '内容过多，更多内容请使用网易云查看'
-        })
+          color: "warning",
+          content: "内容过多，更多内容请使用网易云查看",
+        });
       }
 
-      this.$api.song.detail({
-        ids: this.trackIds
-      }).then(res => {
-        res.songs.map((item, index) => {
-          item.privilege = res.privileges[index]
+      this.$api.song
+        .detail({
+          ids: this.trackIds,
         })
-        
-        this.songs = res.songs
-        this.listLoading = false
-      }).catch(() => {
-        this.listError = true
-        this.songs = []
-      }).finally(() => {
-        this.listLoading = false
-        this.$refs.songs.updatePageModeFront()
-      })
+        .then((res) => {
+          res.songs.map((item, index) => {
+            item.privilege = res.privileges[index];
+          });
+
+          this.songs = res.songs;
+          this.listLoading = false;
+        })
+        .catch(() => {
+          this.listError = true;
+          this.songs = [];
+        })
+        .finally(() => {
+          this.listLoading = false;
+          this.$refs.songs.updatePageModeFront();
+        });
     },
-    
+
     handlePlayListAll() {
-      if(this.listLoading) {
+      if (this.listLoading) {
         this.$message({
-          content: '请等待列表加载完成',
-          color: 'warning'
-        })
-        return
+          content: "请等待列表加载完成",
+          color: "warning",
+        });
+        return;
       }
 
-      this.dialog = true
+      this.dialog = true;
     },
     playListAll() {
-      if(!this.songs.length) {
+      if (!this.songs.length) {
         this.$message({
-          content: '列表为空！',
-          color: 'error'
-        })
-        return
+          content: "列表为空！",
+          color: "error",
+        });
+        return;
       }
 
       this.playAll({
         playlist: this.songs,
-        bottomPlayer: this.$bottomPlayer
-      })
-      this.dialog = false
-    }
+        bottomPlayer: this.$bottomPlayer,
+      });
+      this.dialog = false;
+    },
   },
   computed: {
     imgSize() {
       switch (this.$vuetify.breakpoint.name) {
-        case 'xs': return 145
-        case 'sm': return 160
-        case 'md': return 175
-        case 'lg': return 190
-        case 'xl': return 205
+        case "xs":
+          return 145;
+        case "sm":
+          return 160;
+        case "md":
+          return 175;
+        case "lg":
+          return 190;
+        case "xl":
+          return 205;
       }
     },
     lineClamp() {
       switch (this.$vuetify.breakpoint.name) {
-        case 'xs': return 2
-        case 'sm': return 2
-        case 'md': return 3
-        case 'lg': return 3
-        case 'xl': return 3
+        case "xs":
+          return 2;
+        case "sm":
+          return 2;
+        case "md":
+          return 3;
+        case "lg":
+          return 3;
+        case "xl":
+          return 3;
       }
     },
     getDetail() {
       const getDataMap = {
         Playlist: this.$api.playlist.playlistDetail,
-        Album: this.$api.playlist.album
-      }
-      return getDataMap[this.pageName]
+        Album: this.$api.playlist.album,
+      };
+      return getDataMap[this.pageName];
     },
-   
   },
   watch: {
-    '$route.params.id'(val) {
-      if(!['Playlist'].includes(this.$route.name)) return
+    "$route.params.id"(val) {
+      if (!["Playlist"].includes(this.$route.name)) return;
 
-      if(val && this.id != val) {
-        this.id = val
+      if (val && this.id != val) {
+        this.id = val;
       }
     },
-    '$route.name'(val) {
-      const pageName = val
-      if(['Playlist'].includes(pageName)) {
-        this.pageName = pageName
+    "$route.name"(val) {
+      const pageName = val;
+      if (["Playlist"].includes(pageName)) {
+        this.pageName = pageName;
       }
     },
     id() {
-      this.data = this.$options.data()
-      this.getData()
+      this.data = this.$options.data();
+      this.getData();
     },
     unfold() {
-      this.$refs.songs.updatePageModeFront()
-    }
+      this.$refs.songs.updatePageModeFront();
+    },
   },
   created() {
-    this.pageName = this.$route.name
-    this.id = this.$route.params.id
-  }
+    this.pageName = this.$route.name;
+    this.id = this.$route.params.id;
+  },
 };
 </script>
 
 <style scoped lang="scss">
-
 .cover-img {
   width: 100%;
   height: 100%;
@@ -337,9 +356,9 @@ export default {
         height: 4.5rem;
         word-break: break-all;
         .type {
-          font-size: .8em;
+          font-size: 0.8em;
           display: inline-block;
-          padding: 0 .5rem;
+          padding: 0 0.5rem;
           border-radius: 5px;
           margin-right: 5px;
           vertical-align: middle;
@@ -373,7 +392,7 @@ export default {
       text-align: center;
       .text {
         font-size: 1rem;
-        margin-left: .8rem;
+        margin-left: 0.8rem;
       }
     }
   }

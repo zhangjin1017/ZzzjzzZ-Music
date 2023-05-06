@@ -7,13 +7,23 @@
   >
     <v-list-item-avatar>
       <v-img
-        :src="userInfo.img ? userInfo.img : defaultAvatar"
+        :src="
+          userInfo.img
+            ? 'http://www.zzzjzzz.top:81/prod-api' + userInfo.img
+            : defaultAvatar
+        "
         @error="setDefaultAvatar"
       />
     </v-list-item-avatar>
     <v-list-item-content>
-      <v-list-item-title>{{ userInfo.userId ? userInfo.name : '请登录' }}</v-list-item-title>
-      <v-list-item-subtitle>{{ userInfo.userId ? `歌龄：${ villageAge(userInfo.createTime) }` : '登录以查看更多' }}</v-list-item-subtitle>
+      <v-list-item-title>{{
+        userInfo.userId ? userInfo.name : '请登录'
+      }}</v-list-item-title>
+      <v-list-item-subtitle>{{
+        userInfo.userId
+          ? `歌龄：${villageAge(userInfo.createTime)}`
+          : '登录以查看更多'
+      }}</v-list-item-subtitle>
     </v-list-item-content>
   </v-list-item>
 </template>
@@ -28,7 +38,7 @@ export default {
     return {
       villageAge,
       defaultAvatar: require('@/assets/images/defaultAvatar.svg')
-    };
+    }
   },
   methods: {
     setDefaultAvatar() {
@@ -39,8 +49,8 @@ export default {
         ? this.$router.push({ name: 'User' })
         : this.$router.push({ name: 'Login' })
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped lang="scss">
