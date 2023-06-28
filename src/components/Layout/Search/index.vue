@@ -13,9 +13,11 @@
       :placeholder="defaultKeyword.showKeyword"
       @input="handleSearchbox"
       @keyup.enter="search"
-    >
+    />
     <div class="search-icon-box" @click="handleSearchBut">
-      <v-icon :color="active ? $store.getters.mainColor : ''">mdi-magnify</v-icon>
+      <v-icon :color="active ? $store.getters.mainColor : ''"
+        >mdi-magnify</v-icon
+      >
     </div>
     <transition name="slide-y-transition">
       <SearchExpand
@@ -31,19 +33,19 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import SearchExpand from './components/SearchExpand'
+import { mapMutations } from "vuex";
+import SearchExpand from "./components/SearchExpand";
 
 export default {
-  name: 'LayoutSearch',
+  name: "LayoutSearch",
   components: {
-    SearchExpand
+    SearchExpand,
   },
   data() {
     return {
-      keyword: '', // 搜索关键词
+      keyword: "", // 搜索关键词
       defaultKeyword: {
-        showKeyword: ''
+        showKeyword: "",
       }, // 默认关键词
       active: false, // 焦点是否在组件内
       showExpand: false, // 是否显示搜索拓展
@@ -51,70 +53,68 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('history', [
-      'addSearchHistory'
-    ]),
+    ...mapMutations("history", ["addSearchHistory"]),
     search() {
       let toParam = {
-          name: 'Search',
-          params: {
-            keyword: this.keyword || this.defaultKeyword.realkeyword
-          }
-        }
-      this.addSearchHistory(toParam.params.keyword)
-      this.$refs.searchInput.blur()
-      this.onClickOutside()
-      this.$router.push(toParam)
+        name: "Search",
+        params: {
+          keyword: this.keyword || this.defaultKeyword.realkeyword,
+        },
+      };
+      this.addSearchHistory(toParam.params.keyword);
+      this.$refs.searchInput.blur();
+      this.onClickOutside();
+      this.$router.push(toParam);
     },
     // 搜索历史被点击
     searchHistoryClick(keyword) {
-      this.keyword = keyword
-      this.search()
+      this.keyword = keyword;
+      this.search();
     },
     // 点击搜索按钮
     handleSearchBut() {
       if (this.active) {
-        this.search()
+        this.search();
       }
     },
     // 点击组件（获取焦点）
     handleSearchbox() {
       if (this.active) {
-        return
+        return;
       }
       if (this.$vuetify.breakpoint.mobile) {
-        this.$refs.searchInput.focus()
+        this.$refs.searchInput.focus();
       }
-      this.active = true
+      this.active = true;
       this.showExpandTimer = setTimeout(() => {
-        this.showExpand = true
-      }, this.$store.getters.animationTime)
+        this.showExpand = true;
+      }, this.$store.getters.animationTime);
     },
     // 点击组件外的元素（失去焦点）
     onClickOutside() {
-      this.showExpand = false
-      clearTimeout(this.showExpandTimer)
+      this.showExpand = false;
+      clearTimeout(this.showExpandTimer);
       setTimeout(() => {
-        this.active = false
+        this.active = false;
         if (this.$vuetify.breakpoint.mobile) {
-          this.keyword = ''
+          this.keyword = "";
         }
-      }, this.$store.getters.animationTime)
-    }
+      }, this.$store.getters.animationTime);
+    },
   },
   created() {
-    this.$api.search.default().then(res => {
-      this.defaultKeyword = res.data
-    })
+    this.$api.search.default().then((res) => {
+      this.defaultKeyword = res.data;
+    });
   },
   watch: {
-    '$route.name'() {
-      this.onClickOutside()
+    "$route.name"() {
+      this.onClickOutside();
     },
     showExpand(val) {
-      this.$lock(val, true)
-    }
-  }
+      this.$lock(val, true);
+    },
+  },
 };
 </script>
 
@@ -138,8 +138,8 @@ export default {
     }
   }
   &.active {
-      width: 375px;
-    }
+    width: 375px;
+  }
   &.mobile {
     width: 40px;
     padding: 0 40px 0 0;
@@ -149,8 +149,8 @@ export default {
     }
   }
   .search-input {
-    background: none;  
-    outline: none;  
+    background: none;
+    outline: none;
     border: none;
     height: 100%;
     width: 100%;

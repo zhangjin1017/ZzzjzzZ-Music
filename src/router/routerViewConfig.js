@@ -52,6 +52,14 @@ export default [
     }
   },
   {
+    path: 'video/:id',
+    name: 'Video',
+    component: () => import('../views/Video'),
+    meta: {
+      title: 'Video'
+    }
+  },
+  {
     path: 'user',
     name: 'User',
     component: () => import('@/views/User'),
